@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="phpcs-isaac">
+    <!-- include root folder of project -->
+    <file>.</file>
+    <!-- exclude paths -->
+    <exclude-pattern>./vendor</exclude-pattern>
+
+    <!-- include all rules in isaac ruleset -->
+    <rule ref="ISAAC"/>
+</ruleset>
