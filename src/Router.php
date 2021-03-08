@@ -3,8 +3,6 @@
 namespace GazeHub;
 
 use DI\Container;
-use GazeHub\Controllers\EventController;
-use GazeHub\Controllers\SSEController;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Http\Message\Response;
 
@@ -19,17 +17,16 @@ class Router {
 
         $path = $request->getUri()->getPath();
 
-        $routes = [
-            'GET' => [],
-            'POST' => [],
-            'DELETE' => [],
-        ];
+        $routes = require(__DIR__ . '/../config/Routes.php');
 
-        $routes['GET']['/sse'] = [$this->container->get(SSEController::class), 'handle'];
-        $routes['POST']['/event'] = [$this->container->get(EventController::class), 'handle'];
+        $method = $request->getMethod();
 
-        if (array_key_exists($request->getMethod(), $routes) && array_key_exists($path, $routes[$request->getMethod()])) {
-            return call_user_func($routes[$request->getMethod()][$path], $request);
+        $endPointExist = array_key_exists($method, $routes) && (array_key_exists($path, $routes[$method]));
+
+        if ($endPointExist){
+            $endPoint = $routes[$method][$path];
+            $handler = [ $this->container->get($endPoint[0]), $endPoint[1] ];
+            return call_user_func($handler, $request);
         }
 
         return new Response(404, [], "Not found");
