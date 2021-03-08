@@ -1,27 +1,52 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GazeHub\Services;
 
 use SplObjectStorage;
 
-class StreamRepository {
-
+class StreamRepository
+{
+    /**
+     * @var SplObjectStorage
+     */
     private $streams;
 
-    function __construct() {
+    public function __construct()
+    {
         $this->streams = new SplObjectStorage();
     }
 
-    public function add($stream){
+    /**
+     * @param  mixed $stream
+     * @return void
+     */
+    public function add($stream)
+    {
         $this->streams->attach($stream);
     }
 
-    public function remove($stream){
+    /**
+     * remove
+     *
+     * @param  mixed $stream
+     * @return void
+     */
+    public function remove($stream)
+    {
         $this->streams->detach($stream);
     }
 
-    public function forEach($callback){
-        foreach($this->streams as $stream){
+    /**
+     * forEach
+     *
+     * @param  Callable $callback
+     * @return void
+     */
+    public function forEach($callback)
+    {
+        foreach ($this->streams as $stream) {
             $callback($stream);
         }
     }

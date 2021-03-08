@@ -1,20 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GazeHub\Controllers;
 
 use GazeHub\Services\StreamRepository;
-use React\Stream\ThroughStream;
 use React\Http\Message\Response;
+use React\Stream\ThroughStream;
 
-class SSEController {
-
+class SSEController
+{
+    /**
+     * @var StreamRepository
+     */
     private $streamRepository;
 
-    function __construct(StreamRepository $streamRepository) {
+    public function __construct(StreamRepository $streamRepository)
+    {
         $this->streamRepository = $streamRepository;
     }
 
-    function handle(){
+    /**
+     * @return Response
+     */
+    public function handle()
+    {
         $stream = new ThroughStream(static function ($data) {
             return 'data: ' . $data . "\n\n";
         });
@@ -29,5 +39,4 @@ class SSEController {
 
         return new Response(200, [ 'Content-Type' => 'text/event-stream' ], $stream);
     }
-
 }

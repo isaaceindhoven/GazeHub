@@ -1,15 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GazeHub\Controllers;
 
-class SubscriptionController {
-
-    function create(){
-
+class SubscriptionController
+{
+    public function create()
+    {
     }
 
-    function destroy(){
-        
+    public function destroy()
+    {
     }
-
 }
