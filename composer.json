@@ -1,0 +1,10 @@
+{
+    "name": "isaac/gazehub",
+    "type": "project",
+    "require": {
+        "react/event-loop": "^1.1",
+        "react/http": "^1.2",
+        "react/socket": "^1.6",
+        "react/stream": "^1.1"
+    }
+}
