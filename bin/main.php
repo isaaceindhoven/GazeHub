@@ -3,11 +3,13 @@
 declare(strict_types=1);
 require(__DIR__ . '/../vendor/autoload.php');
 
+use DI\Container;
 use GazeHub\Router;
 use GazeHub\Services\StreamRepository;
 
-$streamRepo = new StreamRepository();
-$router = new Router($streamRepo);
+$container = new Container();
+
+$router = new Router($container);
 
 $loop = React\EventLoop\Factory::create();
 $socket = new React\Socket\Server('0.0.0.0:8000', $loop);

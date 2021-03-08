@@ -5,7 +5,8 @@
         "react/event-loop": "^1.1",
         "react/http": "^1.2",
         "react/socket": "^1.6",
-        "react/stream": "^1.1"
+        "react/stream": "^1.1",
+        "php-di/php-di": "^6.3"
     },
     "require-dev": {
         "isaac/php-code-sniffer-standard": "^20.0"
