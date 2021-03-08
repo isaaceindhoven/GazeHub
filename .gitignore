@@ -2,3 +2,4 @@
 .zshrc
 *.key
 /temp
+*.cache

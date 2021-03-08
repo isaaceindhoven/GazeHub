@@ -11,11 +11,13 @@
     },
     "require-dev": {
         "isaac/php-code-sniffer-standard": "^20.0",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "nunomaduro/collision": "^5.3"
     },
     "autoload": {
         "psr-4": {
-            "GazeHub\\": "src/"
+            "GazeHub\\": "src/",
+            "Tests\\": "tests/"
         }
     }
 }
