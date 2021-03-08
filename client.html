@@ -9,13 +9,11 @@
 <body>
     
     <script>
-
         let SSE = new EventSource("http://localhost:8000/sse");
 
         SSE.onopen = () => { console.log("opened") }
 
-        SSE.onmessage = m => { console.log(m) }
-
+        SSE.onmessage = m => { console.log(m.data) }
     </script>
 </body>
 </html>

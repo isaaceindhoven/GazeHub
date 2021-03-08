@@ -19,17 +19,17 @@ class Router {
 
         $path = $request->getUri()->getPath();
 
-        $routes = [];
-        $routes["/sse"] = [$this->container->get(SSEController::class), 'handle'];
-        $routes["/event"] = [$this->container->get(EventController::class), 'handle'];
+        $routes = [
+            'GET' => [],
+            'POST' => [],
+            'DELETE' => [],
+        ];
 
-        // TODO: remove
-        if ($request->getUri()->getPath() === '/') {
-            return new Response(200, [ 'Content-Type' => 'text/html' ], file_get_contents(__DIR__ . '/../client.html'));
-        }
+        $routes['GET']['/sse'] = [$this->container->get(SSEController::class), 'handle'];
+        $routes['POST']['/event'] = [$this->container->get(EventController::class), 'handle'];
 
-        if (array_key_exists($path, $routes)) {
-            return call_user_func($routes[$path], $request);
+        if (array_key_exists($request->getMethod(), $routes) && array_key_exists($path, $routes[$request->getMethod()])) {
+            return call_user_func($routes[$request->getMethod()][$path], $request);
         }
 
         return new Response(404, [], "Not found");

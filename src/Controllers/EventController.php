@@ -4,6 +4,7 @@ namespace GazeHub\Controllers;
 
 use GazeHub\Services\StreamRepository;
 use React\Http\Message\Response;
+use Psr\Http\Message\ServerRequestInterface;
 
 class EventController {
 
@@ -13,9 +14,14 @@ class EventController {
         $this->streamRepository = $streamRepository;
     }
 
-    function handle(){
-        $this->streamRepository->forEach(static function($stream){
-            $stream->write('hello world');
+    function handle(ServerRequestInterface $request){
+
+        // TODO: check if header JWT token is valid
+
+        $data = (string) $request->getBody();
+        
+        $this->streamRepository->forEach(static function($stream) use ($data) {
+            $stream->write($data);
         });
 
         return new Response(200, [ 'Content-Type' => 'text/html' ], 'Send All Messages');

@@ -2,7 +2,6 @@
 
 namespace GazeHub\Services;
 
-use Iterator;
 use SplObjectStorage;
 
 class StreamRepository {
@@ -14,12 +13,10 @@ class StreamRepository {
     }
 
     public function add($stream){
-        echo("Adding Client");
         $this->streams->attach($stream);
     }
 
     public function remove($stream){
-        echo("Removing Client");
         $this->streams->detach($stream);
     }
 
