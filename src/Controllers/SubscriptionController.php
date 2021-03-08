@@ -3,5 +3,13 @@
 namespace GazeHub\Controllers;
 
 class SubscriptionController {
-    // TODO
+
+    function create(){
+
+    }
+
+    function destroy(){
+        
+    }
+
 }
