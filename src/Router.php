@@ -9,14 +9,13 @@ use Psr\Http\Message\ServerRequestInterface;
 use React\Http\Message\Response;
 
 class Router {
-
     private $container;
 
-    function __construct(Container $container) {
+    public function __construct(Container $container) {
         $this->container = $container;
     }
 
-    function route(ServerRequestInterface $request) {
+    public function route(ServerRequestInterface $request) {
 
         $path = $request->getUri()->getPath();
 
@@ -34,6 +33,5 @@ class Router {
         }
 
         return new Response(404, [], "Not found");
-        
     }
 }
