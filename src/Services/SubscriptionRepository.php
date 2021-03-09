@@ -7,7 +7,7 @@ namespace GazeHub\Services;
 use GazeHub\Models\Client;
 use GazeHub\Models\Subscription;
 
-use function array_key_exists;
+use function array_push;
 
 class SubscriptionRepository
 {
@@ -31,14 +31,14 @@ class SubscriptionRepository
 
     public function unsubscribe(Client $client, array $subscriptionRequest)
     {
-        foreach($this->subscriptions as $subscription){
-            $sameClient = $subscription->client->tokenId == $client->tokenId;
-            $sameTopic = $subscription->topic == $subscriptionRequest['topic'];
-            $sameField = $subscription->field == $subscriptionRequest['field'];
-            $sameOperator = $subscription->operator == $subscriptionRequest['operator'];
-            $sameValue = $subscription->value == $subscriptionRequest['value'];
+        foreach ($this->subscriptions as $subscription) {
+            $sameClient = $subscription->client->tokenId === $client->tokenId;
+            $sameTopic = $subscription->topic === $subscriptionRequest['topic'];
+            $sameField = $subscription->field === $subscriptionRequest['field'];
+            $sameOperator = $subscription->operator === $subscriptionRequest['operator'];
+            $sameValue = $subscription->value === $subscriptionRequest['value'];
 
-            if ($sameClient && $sameTopic && $sameField && $sameOperator && $sameValue){
+            if ($sameClient && $sameTopic && $sameField && $sameOperator && $sameValue) {
                 unset($subscription);
             }
         }
@@ -46,16 +46,16 @@ class SubscriptionRepository
 
     public function forEach(callable $callback): void
     {
-        foreach($this->subscriptions as $subscription) {
+        foreach ($this->subscriptions as $subscription) {
             $callback($subscription);
         }
     }
 
     public function removeClient(Client $client)
     {
-        foreach($this->subscriptions as $subscription){
-            $sameClient = $subscription->client->tokenId == $client->tokenId;
-            if ($sameClient){
+        foreach ($this->subscriptions as $subscription) {
+            $sameClient = $subscription->client->tokenId === $client->tokenId;
+            if ($sameClient) {
                 unset($subscription);
             }
         }

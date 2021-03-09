@@ -9,6 +9,7 @@ use GazeHub\Services\ConfigRepository;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
+use function array_key_exists;
 use function call_user_func_array;
 use function file_get_contents;
 use function str_replace;
@@ -49,20 +50,20 @@ class Request
     public function isAuthorized(): bool
     {
         $authInHeader = $this->originalRequest->hasHeader('Authorization');
-        $authInQuery = array_key_exists("token", $this->originalRequest->getQueryParams());
+        $authInQuery = array_key_exists('token', $this->originalRequest->getQueryParams() ?? []);
 
         $token = null;
 
-        if (($authInHeader == FALSE) && ($authInQuery == FALSE)){
+        if (($authInHeader === false) && ($authInQuery === false)) {
             return false;
         }
 
-        if ($authInHeader){
+        if ($authInHeader) {
             $token = str_replace('Bearer ', '', $this->originalRequest->getHeaderLine('Authorization'));
         }
 
-        if ($authInQuery){
-            $token =  $this->originalRequest->getQueryParams()["token"];
+        if ($authInQuery) {
+            $token =  $this->originalRequest->getQueryParams()['token'];
         }
 
         try {
