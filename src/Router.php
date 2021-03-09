@@ -31,7 +31,7 @@ class Router
 
         $path = $request->getUri()->getPath();
 
-        $routes = require(__DIR__ . '/../config/Routes.php');
+        $routes = require(__DIR__ . '/../config/routes.php');
 
         $method = $request->getMethod();
 

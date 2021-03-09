@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GazeHub\Controllers;
 
 use Firebase\JWT\JWT;
+use GazeHub\Services\ConfigRepository;
 use GazeHub\Services\StreamRepository;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Http\Message\Response;
@@ -25,10 +26,11 @@ class EventController
      */
     private $publicKey;
 
-    public function __construct(StreamRepository $streamRepository)
+    public function __construct(StreamRepository $streamRepository, ConfigRepository $config)
     {
+        $this->config = $config;
         $this->streamRepository = $streamRepository;
-        $this->publicKey = file_get_contents(__DIR__ . '/../../public.key');
+        $this->publicKey = file_get_contents($config->get('jwt_public_key'));
     }
 
     /**

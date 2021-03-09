@@ -6,6 +6,7 @@ namespace GazeHub;
 
 use DI\Container;
 use GazeHub\Middlewares\CorsMiddleware;
+use GazeHub\Services\ConfigRepository;
 use React\EventLoop\Factory;
 use React\Http\Server as HttpServer;
 use React\Socket\Server;
@@ -24,8 +25,12 @@ class Hub
 
     public function run()
     {
+        $config = $this->container->get(ConfigRepository::class);
+        $port = $config->get('server_port');
+        $host = $config->get('server_host');
+
         $loop = Factory::create();
-        $socket = new Server('0.0.0.0:8000', $loop);
+        $socket = new Server(sprintf('%s:%s', $host, $port) , $loop);
 
         $server = new HttpServer(
             $loop,
@@ -35,7 +40,7 @@ class Hub
 
         $server->listen($socket);
 
-        echo 'Start HTTP server on port 8000' . "\n";
+        echo sprintf('Start HTTP server on port %s', $port) . "\n";
 
         $loop->run();
     }
