@@ -29,7 +29,10 @@ class RouterTest extends TestCase
         $this->router = $this->container->get(Router::class);
     }
 
-    private function visitUrl(string $url, string $method = 'GET'): mixed
+    /**
+     * @return ServerRequestInterface
+     */
+    private function visitUrl(string $url, string $method = 'GET')
     {
         $uri = $this->createMock(UriInterface::class);
         $uri

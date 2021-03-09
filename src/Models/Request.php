@@ -30,12 +30,18 @@ class Request
         $this->publicKey = file_get_contents($config->get('jwt_public_key'));
     }
 
-    public function __call(string $name, array $arguments): mixed
+    /**
+     * @return any
+     */
+    public function __call(string $name, array $arguments)
     {
         return call_user_func_array([$this->originalRequest, $name], $arguments);
     }
 
-    public function __get(string $name): mixed
+    /**
+     * @return any
+     */
+    public function __get(string $name)
     {
         return $this->originalRequest->$name;
     }

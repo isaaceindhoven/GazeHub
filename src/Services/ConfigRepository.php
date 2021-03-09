@@ -31,7 +31,7 @@ class ConfigRepository
         $this->config = include($path);
     }
 
-    public function get(string $key): mixed
+    public function get(string $key): string
     {
         if (!$this->config) {
             $this->loadConfig();
