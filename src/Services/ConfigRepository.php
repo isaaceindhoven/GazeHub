@@ -13,9 +13,12 @@ use function sprintf;
 
 class ConfigRepository
 {
+    /**
+     * @var array
+     */
     private $config;
 
-    public function loadConfig(string $path = null)
+    public function loadConfig(string $path = null): void
     {
         if ($path === null) {
             $path = __DIR__ . '/../../config/config.php';
@@ -28,7 +31,7 @@ class ConfigRepository
         $this->config = include($path);
     }
 
-    public function get(string $key)
+    public function get(string $key): string
     {
         if (!$this->config) {
             $this->loadConfig();

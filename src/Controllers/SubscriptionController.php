@@ -6,16 +6,18 @@ namespace GazeHub\Controllers;
 
 use GazeHub\Models\Client;
 use GazeHub\Models\Request;
-use GazeHub\Models\Subscription;
 use GazeHub\Services\ClientRepository;
 use GazeHub\Services\SubscriptionRepository;
 use React\Http\Message\Response;
+
+use function array_key_exists;
 
 class SubscriptionController
 {
     /**
      *  @var SubscriptionRepository
      */
+    // phpcs:ignore SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty
     private $subscriptionRepository;
 
     /**
@@ -30,7 +32,7 @@ class SubscriptionController
     }
 
     public function create(Request $request): Response
-    {   
+    {
         $scope = $this;
 
         return $this->getTopicFromRequest($request, static function(Client $client, array $subscriptionRequest) use ($scope) {

@@ -12,7 +12,14 @@ use Psr\Http\Message\UriInterface;
 
 class RouterTest extends TestCase
 {
+    /**
+     * @var Router
+     */
     private $router;
+
+    /**
+     * @var Container
+     */
     private $container;
 
     public function __construct()
@@ -22,7 +29,10 @@ class RouterTest extends TestCase
         $this->router = $this->container->get(Router::class);
     }
 
-    private function visitUrl($url, $method = 'GET')
+    /**
+     * @return ServerRequestInterface
+     */
+    private function visitUrl(string $url, string $method = 'GET')
     {
         $uri = $this->createMock(UriInterface::class);
         $uri
@@ -44,7 +54,7 @@ class RouterTest extends TestCase
         return $request;
     }
 
-    public function testShouldReturnNotFoundForNonExistingRoute()
+    public function testShouldReturnNotFoundForNonExistingRoute(): void
     {
         // Arrange
         $request = $this->visitUrl('/does-not-exist');
@@ -56,7 +66,7 @@ class RouterTest extends TestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testShouldNotReturn404IfRouteExists()
+    public function testShouldNotReturn404IfRouteExists(): void
     {
         // Arrange
         $request = $this->visitUrl('/event', 'POST');

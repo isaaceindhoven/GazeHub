@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace GazeHub\Controllers;
 
-use Firebase\JWT\JWT;
 use GazeHub\Models\Request;
 use GazeHub\Services\ClientRepository;
-use GazeHub\Services\ConfigRepository;
 use GazeHub\Services\SubscriptionRepository;
-use Psr\Http\Message\ServerRequestInterface;
 use React\Http\Message\Response;
 use React\Stream\ThroughStream;
-use Throwable;
+
+use function json_encode;
 
 class SSEController
 {
@@ -24,34 +22,20 @@ class SSEController
     /**
      * @var SubscriptionRepository
      */
+    // phpcs:ignore SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty
     private $subscriptionRepository;
-
-    /**
-     * @var string
-     */
-    private $publicKey;
 
     public function __construct(
         ClientRepository $clientRepository,
-        ConfigRepository $config,
         SubscriptionRepository $subscriptionRepository
     ) {
         $this->clientRepository = $clientRepository;
         $this->subscriptionRepository = $subscriptionRepository;
-        $this->publicKey = file_get_contents($config->get('jwt_public_key'));
     }
 
     public function handle(Request $request): Response
     {
-        $token = $request->getQueryParams()['token'] ?? null;
-
-        if (!$token) {
-            return new Response(401);
-        }
-
-        try {
-            $decoded = JWT::decode($token, $this->publicKey, ['RS256']);
-        } catch (Throwable $th) {
+        if (!$request->isAuthorized()) {
             return new Response(401);
         }
 
@@ -59,7 +43,7 @@ class SSEController
             return 'data: ' . json_encode($data) . "\n\n";
         });
 
-        $client = $this->clientRepository->add($stream, $decoded);
+        $client = $this->clientRepository->add($stream, $request->getTokenPayload());
 
         $scope = $this;
 

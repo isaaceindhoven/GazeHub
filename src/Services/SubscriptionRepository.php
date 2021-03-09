@@ -7,6 +7,8 @@ namespace GazeHub\Services;
 use GazeHub\Models\Client;
 use GazeHub\Models\Subscription;
 
+use function array_key_exists;
+
 class SubscriptionRepository
 {
     /**
