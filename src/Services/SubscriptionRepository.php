@@ -5,45 +5,56 @@ declare(strict_types=1);
 namespace GazeHub\Services;
 
 use GazeHub\Models\Client;
-use SplObjectStorage;
+use GazeHub\Models\Subscription;
 
 class SubscriptionRepository
 {
     /**
-     * @var SplObjectStorage[]
+     * @var array
      */
     private $subscriptions = [];
 
-    public function subscribe(string $topic, Client $client)
+    public function subscribe(Client $client, array $subscriptionRequest)
     {
-        if (!array_key_exists($topic, $this->subscriptions)) {
-            $this->subscriptions[$topic] = new SplObjectStorage();
-        }
+        $subscription = new Subscription();
+        $subscription->client = $client;
+        $subscription->callbackId = $subscriptionRequest['callbackId'];
+        $subscription->topic = $subscriptionRequest['topic'];
+        $subscription->field = $subscriptionRequest['field'];
+        $subscription->operator = $subscriptionRequest['operator'];
+        $subscription->value = $subscriptionRequest['value'];
 
-        $this->subscriptions[$topic]->attach($client);
+        array_push($this->subscriptions, $subscription);
     }
 
-    public function unsubscribe(string $topic, Client $client)
+    public function unsubscribe(Client $client, array $subscriptionRequest)
     {
-        if (array_key_exists($topic, $this->subscriptions)) {
-            $this->subscriptions[$topic]->detach($client);
-        }
-    }
+        foreach($this->subscriptions as $subscription){
+            $sameClient = $subscription->client->tokenId == $client->tokenId;
+            $sameTopic = $subscription->topic == $subscriptionRequest['topic'];
+            $sameField = $subscription->field == $subscriptionRequest['field'];
+            $sameOperator = $subscription->operator == $subscriptionRequest['operator'];
+            $sameValue = $subscription->value == $subscriptionRequest['value'];
 
-    public function forEachInTopic(string $topic, callable $callback): void
-    {
-        if (array_key_exists($topic, $this->subscriptions)) {
-            foreach($this->subscriptions[$topic] as $client) {
-                $callback($client);
+            if ($sameClient && $sameTopic && $sameField && $sameOperator && $sameValue){
+                unset($subscription);
             }
+        }
+    }
+
+    public function forEach(callable $callback): void
+    {
+        foreach($this->subscriptions as $subscription) {
+            $callback($subscription);
         }
     }
 
     public function removeClient(Client $client)
     {
-        foreach($this->subscriptions as $topic) {
-            if ($topic->contains($client)) {
-                $topic->detach($client);
+        foreach($this->subscriptions as $subscription){
+            $sameClient = $subscription->client->tokenId == $client->tokenId;
+            if ($sameClient){
+                unset($subscription);
             }
         }
     }

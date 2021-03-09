@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace GazeHub\Controllers;
 
-use GazeHub\Models\Client;
+use Exception;
 use GazeHub\Models\Request;
-use GazeHub\Services\ClientRepository;
+use GazeHub\Models\Subscription;
 use GazeHub\Services\SubscriptionRepository;
 use React\Http\Message\Response;
 
@@ -39,10 +39,42 @@ class EventController
             return new Response(400, [], 'Missing payload');
         }
 
-        $this->subscriptionRepository->forEachInTopic($data['topic'], static function (Client $client) use ($data) {
-            $client->stream->write($data['payload']);
+        $parentScope = $this;
+
+        $this->subscriptionRepository->forEach(static function (Subscription $subscription) use ($data, $parentScope) {
+            if ($parentScope->payloadMatchesSubscription($data['topic'], $data['payload'], $subscription)){
+                $subscription->client->stream->write([
+                    "callbackId" => $subscription->callbackId,
+                    "payload" => $data['payload']
+                ]);
+            };
         });
 
         return new Response(200, [ 'Content-Type' => 'text/html' ], 'Completed');
+    }
+
+    private function payloadMatchesSubscription($topic, $payload, $subscription){
+        if ($subscription->topic != $topic) return false;
+
+        $fields = explode(".", $subscription->field);
+
+        $fieldToCheck = $payload;
+
+        foreach($fields as $field){
+            if (!array_key_exists($field, $fieldToCheck)) return false;
+            $fieldToCheck = $fieldToCheck[$field];
+        }
+
+        switch ($subscription->operator) {
+            case "==": return $fieldToCheck == $subscription->value;
+            case "!=": return $fieldToCheck != $subscription->value;
+            case ">": return is_numeric($fieldToCheck) && floatval($fieldToCheck) > $subscription->value;
+            case "<": return is_numeric($fieldToCheck) && floatval($fieldToCheck) < $subscription->value;
+            case ">=": return is_numeric($fieldToCheck) && floatval($fieldToCheck) >= $subscription->value;
+            case "<=": return is_numeric($fieldToCheck) && floatval($fieldToCheck) <= $subscription->value;
+            case "in": return is_array($fieldToCheck) && in_array($fieldToCheck, $subscription->value);
+            case "regex": return boolval(preg_match($subscription->value, $fieldToCheck));
+            default: return false;
+        }
     }
 }

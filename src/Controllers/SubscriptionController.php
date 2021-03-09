@@ -6,6 +6,7 @@ namespace GazeHub\Controllers;
 
 use GazeHub\Models\Client;
 use GazeHub\Models\Request;
+use GazeHub\Models\Subscription;
 use GazeHub\Services\ClientRepository;
 use GazeHub\Services\SubscriptionRepository;
 use React\Http\Message\Response;
@@ -32,8 +33,8 @@ class SubscriptionController
     {   
         $scope = $this;
 
-        return $this->getTopicFromRequest($request, static function(string $topic, Client $client) use ($scope) {
-            $scope->subscriptionRepository->subscribe($topic, $client);
+        return $this->getTopicFromRequest($request, static function(Client $client, array $subscriptionRequest) use ($scope) {
+            $scope->subscriptionRepository->subscribe($client, $subscriptionRequest);
         });
     }
 
@@ -41,8 +42,8 @@ class SubscriptionController
     {
         $scope = $this;
 
-        return $this->getTopicFromRequest($request, static function(string $topic, Client $client) use ($scope) {
-            $scope->subscriptionRepository->unsubscribe($topic, $client);
+        return $this->getTopicFromRequest($request, static function(Client $client, array $subscriptionRequest) use ($scope) {
+            $scope->subscriptionRepository->unsubscribe($client, $subscriptionRequest);
         });
     }
 
@@ -53,19 +54,35 @@ class SubscriptionController
         }
 
         $body = $request->getParsedBody();
-        
-        if (!array_key_exists('topic', $body)) {
-            return new Response(400, [], 'Missing topic');
+
+        if (!is_array($body)){
+            return new Response(400, [], 'Missing topics');
         }
-        
+
+        if (count($body) == 0){
+            return new Response(400, [], 'Missing topics');
+        }
+
         $client = $this->clientRepository->getByTokenId($request->getTokenPayload()['jti']);
 
         if (!$client) {
             return new Response(401);
         }
-        
-        $callback($body['topic'], $client);
+
+        foreach($body as $subscriptionRequest){
+
+            if (!array_key_exists('topic', $subscriptionRequest)) {
+                return new Response(400, [], 'Missing topic');
+            }
+
+            if (!array_key_exists('callbackId', $subscriptionRequest)) {
+                return new Response(400, [], 'Missing callbackId');
+            }
+
+            $callback($client, $subscriptionRequest);
+        }
         
         return new Response(204);
     }
+
 }
