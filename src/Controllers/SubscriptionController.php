@@ -10,11 +10,14 @@ use GazeHub\Services\ClientRepository;
 use GazeHub\Services\SubscriptionRepository;
 use React\Http\Message\Response;
 
+use function array_key_exists;
+
 class SubscriptionController
 {
     /**
      *  @var SubscriptionRepository
      */
+    // phpcs:ignore SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty
     private $subscriptionRepository;
 
     /**
@@ -29,10 +32,10 @@ class SubscriptionController
     }
 
     public function create(Request $request): Response
-    {   
+    {
         $scope = $this;
 
-        return $this->getTopicFromRequest($request, static function(string $topic, Client $client) use ($scope) {
+        return $this->getTopicFromRequest($request, static function (string $topic, Client $client) use ($scope) {
             $scope->subscriptionRepository->subscribe($topic, $client);
         });
     }
@@ -41,7 +44,7 @@ class SubscriptionController
     {
         $scope = $this;
 
-        return $this->getTopicFromRequest($request, static function(string $topic, Client $client) use ($scope) {
+        return $this->getTopicFromRequest($request, static function (string $topic, Client $client) use ($scope) {
             $scope->subscriptionRepository->unsubscribe($topic, $client);
         });
     }
@@ -53,19 +56,19 @@ class SubscriptionController
         }
 
         $body = $request->getParsedBody();
-        
+
         if (!array_key_exists('topic', $body)) {
             return new Response(400, [], 'Missing topic');
         }
-        
+
         $client = $this->clientRepository->getByTokenId($request->getTokenPayload()['jti']);
 
         if (!$client) {
             return new Response(401);
         }
-        
+
         $callback($body['topic'], $client);
-        
+
         return new Response(204);
     }
 }

@@ -7,6 +7,8 @@ namespace GazeHub\Services;
 use GazeHub\Models\Client;
 use SplObjectStorage;
 
+use function array_key_exists;
+
 class SubscriptionRepository
 {
     /**
@@ -33,7 +35,7 @@ class SubscriptionRepository
     public function forEachInTopic(string $topic, callable $callback): void
     {
         if (array_key_exists($topic, $this->subscriptions)) {
-            foreach($this->subscriptions[$topic] as $client) {
+            foreach ($this->subscriptions[$topic] as $client) {
                 $callback($client);
             }
         }
@@ -41,7 +43,7 @@ class SubscriptionRepository
 
     public function removeClient(Client $client)
     {
-        foreach($this->subscriptions as $topic) {
+        foreach ($this->subscriptions as $topic) {
             if ($topic->contains($client)) {
                 $topic->detach($client);
             }

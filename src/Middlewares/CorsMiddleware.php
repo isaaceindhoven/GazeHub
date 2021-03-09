@@ -11,14 +11,15 @@ class CorsMiddleware
 {
     public function handle(ServerRequestInterface $request, callable $next): Response
     {
-        if ($request->getMethod() == 'OPTIONS') {
+        if ($request->getMethod() === 'OPTIONS') {
             return $this->addCorsHeaders($request, new Response(204));
         }
 
         return $this->addCorsHeaders($request, $next($request));
     }
 
-    private function addCorsHeaders(ServerRequestInterface $request, Response $response) {
+    private function addCorsHeaders(ServerRequestInterface $request, Response $response): Response
+    {
         return $response
             ->withHeader('Access-Control-Allow-Origin', (string) $request->getHeaderLine('Origin'))
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE')

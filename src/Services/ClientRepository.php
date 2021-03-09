@@ -7,7 +7,6 @@ namespace GazeHub\Services;
 use GazeHub\Models\Client;
 use React\Stream\ThroughStream;
 use SplObjectStorage;
-use stdClass;
 
 class ClientRepository
 {
@@ -23,8 +22,8 @@ class ClientRepository
 
     public function getByTokenId(string $tokenId): ?Client
     {
-        foreach($this->clients as $client) {
-            if ($client->tokenId == $tokenId) {
+        foreach ($this->clients as $client) {
+            if ($client->tokenId === $tokenId) {
                 return $client;
             }
         }
@@ -32,12 +31,12 @@ class ClientRepository
         return null;
     }
 
-    public function add(ThroughStream $stream, stdClass $token): Client
+    public function add(ThroughStream $stream, array $token): Client
     {
         $client = new Client();
         $client->stream = $stream;
-        $client->roles = $token->roles;
-        $client->tokenId = $token->jti;
+        $client->roles = $token['roles'];
+        $client->tokenId = $token['jti'];
 
         $this->clients->attach($client);
 

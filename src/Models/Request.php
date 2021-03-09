@@ -9,6 +9,10 @@ use GazeHub\Services\ConfigRepository;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
+use function call_user_func_array;
+use function file_get_contents;
+use function str_replace;
+
 class Request
 {
     /**
@@ -26,21 +30,18 @@ class Request
         $this->publicKey = file_get_contents($config->get('jwt_public_key'));
     }
 
-    public function __call(string $name, array $arguments)
+    public function __call(string $name, array $arguments): mixed
     {
         return call_user_func_array([$this->originalRequest, $name], $arguments);
     }
 
-    public function __get(string $name) {
+    public function __get(string $name): mixed
+    {
         return $this->originalRequest->$name;
     }
 
     public function isAuthorized(): bool
     {
-        // if (!is_null($this->token)) {
-        //     return true;
-        // }
-
         if ($this->originalRequest->hasHeader('Authorization') === false) {
             return false;
         }

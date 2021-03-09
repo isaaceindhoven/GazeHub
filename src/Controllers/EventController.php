@@ -6,13 +6,13 @@ namespace GazeHub\Controllers;
 
 use GazeHub\Models\Client;
 use GazeHub\Models\Request;
-use GazeHub\Services\ClientRepository;
 use GazeHub\Services\SubscriptionRepository;
 use React\Http\Message\Response;
 
+use function array_key_exists;
+
 class EventController
 {
-
     /**
      * @var SubscriptionRepository
      */
@@ -25,7 +25,7 @@ class EventController
 
     public function handle(Request $request): Response
     {
-        if (!$request->isAuthorized() || $request->getTokenPayload()['role'] != 'server') {
+        if (!$request->isAuthorized() || $request->getTokenPayload()['role'] !== 'server') {
             return new Response(401);
         }
 

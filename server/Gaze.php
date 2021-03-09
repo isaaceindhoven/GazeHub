@@ -44,7 +44,8 @@ class Gaze
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
             'payload' => $payload,
-            'topic' => $name
+            'topic' => $name,
+            'role' => $role,
         ]));
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type:application/json',
