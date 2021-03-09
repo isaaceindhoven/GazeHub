@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace GazeHub\Controllers;
 
 use Firebase\JWT\JWT;
+use GazeHub\Models\Request;
 use GazeHub\Services\ClientRepository;
 use GazeHub\Services\ConfigRepository;
+use GazeHub\Services\SubscriptionRepository;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Http\Message\Response;
 use React\Stream\ThroughStream;
@@ -20,20 +22,26 @@ class SSEController
     private $clientRepository;
 
     /**
+     * @var SubscriptionRepository
+     */
+    private $subscriptionRepository;
+
+    /**
      * @var string
      */
     private $publicKey;
 
-    public function __construct(ClientRepository $clientRepository, ConfigRepository $config)
-    {
+    public function __construct(
+        ClientRepository $clientRepository,
+        ConfigRepository $config,
+        SubscriptionRepository $subscriptionRepository
+    ) {
         $this->clientRepository = $clientRepository;
+        $this->subscriptionRepository = $subscriptionRepository;
         $this->publicKey = file_get_contents($config->get('jwt_public_key'));
     }
 
-    /**
-     * @return Response
-     */
-    public function handle(ServerRequestInterface $request)
+    public function handle(Request $request): Response
     {
         $token = $request->getQueryParams()['token'] ?? null;
 
@@ -47,8 +55,8 @@ class SSEController
             return new Response(401);
         }
 
-        $stream = new ThroughStream(static function ($data) {
-            return 'data: ' . $data . "\n\n";
+        $stream = new ThroughStream(static function (array $data) {
+            return 'data: ' . json_encode($data) . "\n\n";
         });
 
         $client = $this->clientRepository->add($stream, $decoded);
@@ -56,6 +64,7 @@ class SSEController
         $scope = $this;
 
         $stream->on('close', static function () use ($scope, $client) {
+            $scope->subscriptionRepository->removeClient($client);
             $scope->clientRepository->remove($client);
         });
 

@@ -4,63 +4,45 @@ declare(strict_types=1);
 
 namespace GazeHub\Controllers;
 
-use Firebase\JWT\JWT;
 use GazeHub\Models\Client;
-use GazeHub\Services\ConfigRepository;
+use GazeHub\Models\Request;
 use GazeHub\Services\ClientRepository;
-use Psr\Http\Message\ServerRequestInterface;
+use GazeHub\Services\SubscriptionRepository;
 use React\Http\Message\Response;
-use Throwable;
-
-use function file_get_contents;
-use function str_replace;
 
 class EventController
 {
-    /**
-     * @var ClientRepository
-     */
-    private $clientRepository;
 
     /**
-     * @var string
+     * @var SubscriptionRepository
      */
-    private $publicKey;
+    private $subscriptionRepository;
 
-    public function __construct(ClientRepository $clientRepository, ConfigRepository $config)
+    public function __construct(SubscriptionRepository $subscriptionRepository)
     {
-        $this->config = $config;
-        $this->clientRepository = $clientRepository;
-        $this->publicKey = file_get_contents($config->get('jwt_public_key'));
+        $this->subscriptionRepository = $subscriptionRepository;
     }
 
-    /**
-     * @return Response
-     */
-    public function handle(ServerRequestInterface $request)
+    public function handle(Request $request): Response
     {
-
-        if ($request->hasHeader('Authorization') === false) {
+        if (!$request->isAuthorized() || $request->getTokenPayload()['role'] != 'server') {
             return new Response(401);
         }
 
-        $token = str_replace('Bearer ', '', $request->getHeaderLine('Authorization'));
+        $data = $request->getParsedBody();
 
-        try {
-            $decoded = JWT::decode($token, $this->publicKey, ['RS256']);
-            if ($decoded->role !== 'server') {
-                return new Response(401);
-            }
-
-            $data = (string) $request->getBody();
-
-            $this->clientRepository->forEach(static function (Client $client) use ($data) {
-                $client->stream->write($data);
-            });
-
-            return new Response(200, [ 'Content-Type' => 'text/html' ], 'Completed');
-        } catch (Throwable $th) {
-            return new Response(401);
+        if (!array_key_exists('topic', $data)) {
+            return new Response(400, [], 'Missing topic');
         }
+
+        if (!array_key_exists('payload', $data)) {
+            return new Response(400, [], 'Missing payload');
+        }
+
+        $this->subscriptionRepository->forEachInTopic($data['topic'], static function (Client $client) use ($data) {
+            $client->stream->write($data['payload']);
+        });
+
+        return new Response(200, [ 'Content-Type' => 'text/html' ], 'Completed');
     }
 }

@@ -21,6 +21,17 @@ class ClientRepository
         $this->clients = new SplObjectStorage();
     }
 
+    public function getByTokenId(string $tokenId): ?Client
+    {
+        foreach($this->clients as $client) {
+            if ($client->tokenId == $tokenId) {
+                return $client;
+            }
+        }
+
+        return null;
+    }
+
     public function add(ThroughStream $stream, stdClass $token): Client
     {
         $client = new Client();

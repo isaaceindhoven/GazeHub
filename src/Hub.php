@@ -6,6 +6,7 @@ namespace GazeHub;
 
 use DI\Container;
 use GazeHub\Middlewares\CorsMiddleware;
+use GazeHub\Middlewares\JsonParserMiddleware;
 use GazeHub\Services\ConfigRepository;
 use React\EventLoop\Factory;
 use React\Http\Server as HttpServer;
@@ -37,6 +38,7 @@ class Hub
         $server = new HttpServer(
             $loop,
             [$this->container->get(CorsMiddleware::class), 'handle'],
+            [$this->container->get(JsonParserMiddleware::class), 'handle'],
             [$this->container->get(Router::class), 'route']
         );
 

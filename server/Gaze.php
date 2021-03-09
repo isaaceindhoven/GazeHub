@@ -30,7 +30,7 @@ class Gaze
         $this->privateKey = file_get_contents(__DIR__ . '/../private.key');
     }
 
-    public function emit($name, $payload, $role = null)
+    public function emit(string $name, array $payload, string $role = null): void
     {
         $MINUTES_VALID = 5;
 
@@ -42,7 +42,10 @@ class Gaze
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'http://localhost:8000/event');
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+            'payload' => $payload,
+            'topic' => $name
+        ]));
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type:application/json',
             'Authorization: Bearer ' . $jwt,

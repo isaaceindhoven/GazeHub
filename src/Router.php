@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GazeHub;
 
 use DI\Container;
+use GazeHub\Models\Request;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Http\Message\Response;
 
@@ -23,10 +24,7 @@ class Router
         $this->container = $container;
     }
 
-    /**
-     * @return Response
-     */
-    public function route(ServerRequestInterface $request)
+    public function route(ServerRequestInterface $request): Response
     {
 
         $path = $request->getUri()->getPath();
@@ -37,10 +35,13 @@ class Router
 
         $endPointExist = array_key_exists($method, $routes) && (array_key_exists($path, $routes[$method]));
 
+        $req = $this->container->get(Request::class);
+        $req->setOriginalRequest($request);
+
         if ($endPointExist) {
             $endPoint = $routes[$method][$path];
             $handler = [ $this->container->get($endPoint[0]), $endPoint[1] ];
-            return call_user_func($handler, $request);
+            return call_user_func($handler, $req);
         }
 
         return new Response(404, [], 'Not found');

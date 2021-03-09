@@ -23,7 +23,20 @@
 
             let SSE = new EventSource(`http://localhost:8000/sse?token=${token}`);
 
-            SSE.onopen = () => { console.log("opened") }
+            SSE.onopen = async () => { 
+                console.log("opened");
+
+                await fetch('http://localhost:8000/subscription', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        topic: 'ProductCreated'
+                    })
+                });
+            }
 
             SSE.onmessage = m => {
                 document.querySelector("#in").innerHTML += `<pre>${m.data}</pre>`
