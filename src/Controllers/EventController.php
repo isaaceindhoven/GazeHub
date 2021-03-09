@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace GazeHub\Controllers;
 
 use Firebase\JWT\JWT;
+use GazeHub\Models\Client;
 use GazeHub\Services\ConfigRepository;
-use GazeHub\Services\StreamRepository;
+use GazeHub\Services\ClientRepository;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Http\Message\Response;
 use Throwable;
@@ -17,19 +18,19 @@ use function str_replace;
 class EventController
 {
     /**
-     * @var StreamRepository
+     * @var ClientRepository
      */
-    private $streamRepository;
+    private $clientRepository;
 
     /**
      * @var string
      */
     private $publicKey;
 
-    public function __construct(StreamRepository $streamRepository, ConfigRepository $config)
+    public function __construct(ClientRepository $clientRepository, ConfigRepository $config)
     {
         $this->config = $config;
-        $this->streamRepository = $streamRepository;
+        $this->clientRepository = $clientRepository;
         $this->publicKey = file_get_contents($config->get('jwt_public_key'));
     }
 
@@ -53,8 +54,8 @@ class EventController
 
             $data = (string) $request->getBody();
 
-            $this->streamRepository->forEach(static function ($stream) use ($data) {
-                $stream->write($data);
+            $this->clientRepository->forEach(static function (Client $client) use ($data) {
+                $client->stream->write($data);
             });
 
             return new Response(200, [ 'Content-Type' => 'text/html' ], 'Completed');

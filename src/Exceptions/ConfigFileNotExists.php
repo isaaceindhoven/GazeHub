@@ -6,4 +6,6 @@ namespace GazeHub\Exceptions;
 
 use Exception;
 
-class ConfigFileNotExists extends Exception {}
+class ConfigFileNotExists extends Exception
+{
+}

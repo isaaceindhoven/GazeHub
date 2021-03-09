@@ -1,26 +1,29 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests;
 
-use PHPUnit\Framework\TestCase;
 use DI\Container;
 use GazeHub\Router;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 
-class RouterTest extends TestCase {
-
+class RouterTest extends TestCase
+{
     private $router;
     private $container;
 
-    public function __construct(){
+    public function __construct()
+    {
         parent::__construct();
         $this->container = new Container();
         $this->router = $this->container->get(Router::class);
     }
 
-    private function visitUrl($url, $method = "GET"){
+    private function visitUrl($url, $method = 'GET')
+    {
         $uri = $this->createMock(UriInterface::class);
         $uri
             ->expects($this->once())
@@ -32,18 +35,19 @@ class RouterTest extends TestCase {
             ->expects($this->once())
             ->method('getUri')
             ->willReturn($uri);
-        
+
         $request
             ->expects($this->once())
             ->method('getMethod')
             ->willReturn($method);
-        
+
         return $request;
     }
-    
-    public function testShouldReturnNotFoundForNonExistingRoute() {
+
+    public function testShouldReturnNotFoundForNonExistingRoute()
+    {
         // Arrange
-        $request = $this->visitUrl("/does-not-exist");
+        $request = $this->visitUrl('/does-not-exist');
 
         // Act
         $response = $this->router->route($request);
@@ -52,9 +56,10 @@ class RouterTest extends TestCase {
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testShouldNotReturn404IfRouteExists() {
+    public function testShouldNotReturn404IfRouteExists()
+    {
         // Arrange
-        $request = $this->visitUrl("/event", "POST");
+        $request = $this->visitUrl('/event', 'POST');
 
         // Act
         $response = $this->router->route($request);

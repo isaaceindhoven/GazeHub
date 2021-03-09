@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Services;
 
-use DI\Container;
 use GazeHub\Exceptions\ConfigFileNotExists;
 use GazeHub\Exceptions\ConfigKeyNotFound;
 use GazeHub\Services\ConfigRepository;

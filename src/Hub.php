@@ -11,6 +11,8 @@ use React\EventLoop\Factory;
 use React\Http\Server as HttpServer;
 use React\Socket\Server;
 
+use function sprintf;
+
 class Hub
 {
     /**
@@ -30,7 +32,7 @@ class Hub
         $host = $config->get('server_host');
 
         $loop = Factory::create();
-        $socket = new Server(sprintf('%s:%s', $host, $port) , $loop);
+        $socket = new Server(sprintf('%s:%s', $host, $port), $loop);
 
         $server = new HttpServer(
             $loop,
