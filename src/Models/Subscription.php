@@ -32,7 +32,7 @@ class Subscription
     public $operator;
 
     /**
-     * @var string
+     * @var mixed
      */
     public $value;
 }

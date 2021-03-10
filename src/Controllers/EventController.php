@@ -73,7 +73,7 @@ class EventController
 
         switch ($subscription->operator) {
             case '==':
-                return $fieldToCheck === $subscription->value;
+                return strval($fieldToCheck) === strval($subscription->value);
             case '!=':
                 return $fieldToCheck !== $subscription->value;
             case '>':
@@ -93,7 +93,10 @@ class EventController
         }
     }
 
-    private function getNestedField(array $obj, string $path): string
+    /**
+     * @return mixed
+     */
+    private function getNestedField(array $obj, string $path)
     {
         $fields = explode('.', $path);
 

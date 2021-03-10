@@ -35,40 +35,9 @@ class SubscriptionController
 
     public function create(Request $request): Response
     {
-        $scope = $this;
-
-        return $this->getTopicFromRequest(
-            $request,
-            static function (Client $client, array $subscriptionRequest) use ($scope) {
-                $scope->subscriptionRepository->subscribe($client, $subscriptionRequest);
-            }
-        );
-    }
-
-    public function destroy(Request $request): Response
-    {
-        $scope = $this;
-
-        return $this->getTopicFromRequest(
-            $request,
-            static function (Client $client, array $subscriptionRequest) use ($scope) {
-                $scope->subscriptionRepository->unsubscribe($client, $subscriptionRequest);
-            }
-        );
-    }
-
-    private function getTopicFromRequest(Request $request, callable $callback): Response
-    {
-
-
         if (!$request->isAuthorized()) {
             return new Response(401);
         }
-
-        if (!is_array($request->getParsedBody()) || count($request->getParsedBody()) === 0) {
-            return new Response(400, [], 'Missing topics');
-        }
-
 
         $client = $this->clientRepository->getByTokenId($request->getTokenPayload()['jti']);
 
@@ -76,18 +45,42 @@ class SubscriptionController
             return new Response(401);
         }
 
-        foreach ($request->getParsedBody() as $subscriptionRequest) {
-            if (!$this->arrayHasAllKeys($subscriptionRequest, ['topic', 'callbackId'])) {
-                return new Response(400, [], 'Missing data');
-            }
-            $callback($client, $subscriptionRequest);
+        if (!$this->arrayHasAllKeys($request->getParsedBody(), ["callbackId", "topic", "selector"])){
+            return new Response(400, [], 'Subscribe is missing data');
         }
+
+        $this->subscriptionRepository->subscribe($client, $request->getParsedBody());
+
+        return new Response(204);
+    }
+
+    public function destroy(Request $request): Response
+    {
+        if (!$request->isAuthorized()) {
+            return new Response(401);
+        }
+
+        $client = $this->clientRepository->getByTokenId($request->getTokenPayload()['jti']);
+
+        if (!$client) {
+            return new Response(401);
+        }
+
+        if (!$this->arrayHasAllKeys($request->getParsedBody(), ["callbackId"])){
+            return new Response(400, [], 'Unsubscribe is callbackId');
+        }
+
+        $this->subscriptionRepository->unsubscribe($client, $request->getParsedBody()["callbackId"]);
 
         return new Response(204);
     }
 
     private function arrayHasAllKeys(array $arr, array $keys): bool
     {
+        if (!is_array($arr)){
+            return false;
+        }
+
         foreach ($keys as $key) {
             if (!array_key_exists($key, $arr)) {
                 return false;

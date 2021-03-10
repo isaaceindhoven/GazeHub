@@ -22,23 +22,22 @@ class SubscriptionRepository
         $subscription->client = $client;
         $subscription->callbackId = $subscriptionRequest['callbackId'];
         $subscription->topic = $subscriptionRequest['topic'];
-        $subscription->field = $subscriptionRequest['field'];
-        $subscription->operator = $subscriptionRequest['operator'];
-        $subscription->value = $subscriptionRequest['value'];
+        if ($subscriptionRequest['selector']){
+            $subscription->field = $subscriptionRequest['selector']['field'];
+            $subscription->operator = $subscriptionRequest['selector']['operator'];
+            $subscription->value = $subscriptionRequest['selector']['value'];
+        }
 
         array_push($this->subscriptions, $subscription);
     }
 
-    public function unsubscribe(Client $client, array $subscriptionRequest)
+    public function unsubscribe(Client $client, string $callbackId)
     {
         foreach ($this->subscriptions as $subscription) {
             $sameClient = $subscription->client->tokenId === $client->tokenId;
-            $sameTopic = $subscription->topic === $subscriptionRequest['topic'];
-            $sameField = $subscription->field === $subscriptionRequest['field'];
-            $sameOperator = $subscription->operator === $subscriptionRequest['operator'];
-            $sameValue = $subscription->value === $subscriptionRequest['value'];
+            $sameCallbackId = $subscription->callbackId == $callbackId;
 
-            if ($sameClient && $sameTopic && $sameField && $sameOperator && $sameValue) {
+            if ($sameClient && $sameCallbackId) {
                 unset($subscription);
             }
         }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GazeHub;
 
 use DI\Container;
+use Exception;
 use GazeHub\Middlewares\CorsMiddleware;
 use GazeHub\Middlewares\JsonParserMiddleware;
 use GazeHub\Services\ConfigRepository;
@@ -41,6 +42,13 @@ class Hub
             [$this->container->get(JsonParserMiddleware::class), 'handle'],
             [$this->container->get(Router::class), 'route']
         );
+
+        $server->on('error', function (Exception $e) {
+            echo 'Error: ' . $e->getMessage() . PHP_EOL;
+            if ($e->getPrevious() !== null) {
+                echo 'Previous: ' . $e->getPrevious()->getMessage() . PHP_EOL;
+            }
+        });
 
         $server->listen($socket);
 
