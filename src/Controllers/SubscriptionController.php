@@ -59,6 +59,8 @@ class SubscriptionController
 
     private function getTopicFromRequest(Request $request, callable $callback): Response
     {
+
+
         if (!$request->isAuthorized()) {
             return new Response(401);
         }
@@ -67,6 +69,7 @@ class SubscriptionController
             return new Response(400, [], 'Missing topics');
         }
 
+
         $client = $this->clientRepository->getByTokenId($request->getTokenPayload()['jti']);
 
         if (!$client) {
@@ -74,7 +77,7 @@ class SubscriptionController
         }
 
         foreach ($request->getParsedBody() as $subscriptionRequest) {
-            if ($this->arrayHasAllKeys($subscriptionRequest, ['topic', 'callbackId'])) {
+            if (!$this->arrayHasAllKeys($subscriptionRequest, ['topic', 'callbackId'])) {
                 return new Response(400, [], 'Missing data');
             }
             $callback($client, $subscriptionRequest);
