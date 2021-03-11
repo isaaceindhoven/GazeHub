@@ -26,5 +26,6 @@
     },
     "scripts": {
         "install-git-hooks": "ISAAC\\ComposerGitHooks\\ComposerPlugin::process"
-    }
+    },
+    "license": "proproprietary"
 }
