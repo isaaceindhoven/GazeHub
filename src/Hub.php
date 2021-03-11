@@ -15,6 +15,8 @@ use React\Socket\Server;
 
 use function sprintf;
 
+use const PHP_EOL;
+
 class Hub
 {
     /**
@@ -43,17 +45,20 @@ class Hub
             [$this->container->get(Router::class), 'route']
         );
 
-        $server->on('error', function (Exception $e) {
-            echo 'Error: ' . $e->getMessage() . PHP_EOL;
-            if ($e->getPrevious() !== null) {
-                echo 'Previous: ' . $e->getPrevious()->getMessage() . PHP_EOL;
-            }
-        });
+        $server->on('error', [$this, 'onError']);
 
         $server->listen($socket);
 
         echo sprintf('Start HTTP server on port %s', $port) . "\n";
 
         $loop->run();
+    }
+
+    public function onError(Exception $e)
+    {
+        echo 'Error: ' . $e->getMessage() . PHP_EOL;
+        if ($e->getPrevious() !== null) {
+            echo 'Previous: ' . $e->getPrevious()->getMessage() . PHP_EOL;
+        }
     }
 }

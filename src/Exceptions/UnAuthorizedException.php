@@ -6,6 +6,6 @@ namespace GazeHub\Exceptions;
 
 use Exception;
 
-class ConfigKeyNotFound extends Exception
+class UnAuthorizedException extends Exception
 {
 }

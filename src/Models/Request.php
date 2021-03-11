@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GazeHub\Models;
 
 use Firebase\JWT\JWT;
+use GazeHub\Exceptions\UnAuthorizedException;
 use GazeHub\Services\ConfigRepository;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
@@ -12,6 +13,7 @@ use Throwable;
 use function array_key_exists;
 use function call_user_func_array;
 use function file_get_contents;
+use function is_array;
 use function str_replace;
 
 class Request
@@ -47,32 +49,23 @@ class Request
         return $this->originalRequest->$name;
     }
 
-    public function isAuthorized(): bool
+    public function isAuthorized()
     {
-        $authInHeader = $this->originalRequest->hasHeader('Authorization');
-        $authInQuery = array_key_exists('token', $this->originalRequest->getQueryParams() ?? []);
+        $token = $this->getHeaderLine('Authorization');
 
-        $token = null;
+        $tokenInQuery = is_array($this->getQueryParams()) && array_key_exists('token', $this->getQueryParams());
 
-        if (($authInHeader === false) && ($authInQuery === false)) {
-            return false;
-        }
-
-        if ($authInHeader) {
-            $token = str_replace('Bearer ', '', $this->originalRequest->getHeaderLine('Authorization'));
-        }
-
-        if ($authInQuery) {
-            $token =  $this->originalRequest->getQueryParams()['token'];
+        if ($token === null && $tokenInQuery) {
+            $token = $this->getQueryParams['token'];
+        } elseif ($token !== null) {
+            $token = str_replace('Bearer ', '', $token);
         }
 
         try {
             $this->token = JWT::decode($token, $this->publicKey, ['RS256']);
         } catch (Throwable $th) {
-            return false;
+            throw new UnAuthorizedException();
         }
-
-        return true;
     }
 
     public function setOriginalRequest(ServerRequestInterface $request): void

@@ -22,22 +22,18 @@ class SSEController
     /**
      * @var SubscriptionRepository
      */
-    // phpcs:ignore SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty
+    //phpcs:ignore SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty
     private $subscriptionRepository;
 
-    public function __construct(
-        ClientRepository $clientRepository,
-        SubscriptionRepository $subscriptionRepository
-    ) {
+    public function __construct(ClientRepository $clientRepository, SubscriptionRepository $subscriptionRepository)
+    {
         $this->clientRepository = $clientRepository;
         $this->subscriptionRepository = $subscriptionRepository;
     }
 
     public function handle(Request $request): Response
     {
-        if (!$request->isAuthorized()) {
-            return new Response(401);
-        }
+        $request->isAuthorized();
 
         $stream = new ThroughStream(static function (array $data) {
             return 'data: ' . json_encode($data) . "\n\n";
@@ -48,7 +44,7 @@ class SSEController
         $scope = $this;
 
         $stream->on('close', static function () use ($scope, $client) {
-            $scope->subscriptionRepository->removeClient($client);
+            $scope->subscriptionRepository->unsubscribe($client);
             $scope->clientRepository->remove($client);
         });
 

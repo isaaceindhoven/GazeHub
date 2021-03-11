@@ -4,31 +4,30 @@ declare(strict_types=1);
 
 namespace Tests\Controllers;
 
-use DI\Container;
 use GazeHub\Controllers\EventController;
+use GazeHub\Exceptions\DataValidationFailedException;
+use GazeHub\Exceptions\UnAuthorizedException;
 use GazeHub\Models\Request;
 
 class EventControllerTest extends ControllerTestCase
 {
-
-    public function testShouldReturn401IfNoTokenPresent()
+    public function testShouldThrowIfNoTokenPresent()
     {
         // Arrange
+        $this->expectException(UnAuthorizedException::class);
         $requestMock = $this->getRequestMock();
         $request = $this->container->get(Request::class);
         $request->setOriginalRequest($requestMock);
 
         // Act
         $eventController = $this->container->get(EventController::class);
-
-        // Assert
-        $response = $eventController->handle($request);
-        $this->assertEquals(401, $response->getStatusCode());
+        $eventController->handle($request);
     }
 
-    public function testShouldReturn401IfTokenIsEmptyString()
+    public function testShouldThrowIfTokenIsEmptyString()
     {
         // Arrange
+        $this->expectException(UnAuthorizedException::class);
         $requestMock = $this->getRequestMock();
 
         $request = $this->container->get(Request::class);
@@ -36,15 +35,13 @@ class EventControllerTest extends ControllerTestCase
 
         // Act
         $eventController = $this->container->get(EventController::class);
-
-        // Assert
-        $response = $eventController->handle($request);
-        $this->assertEquals(401, $response->getStatusCode());
+        $eventController->handle($request);
     }
 
-    public function testShouldReturn401IfTokenIsInvalid()
+    public function testShouldThrowIfTokenIsInvalid()
     {
         // Arrange
+        $this->expectException(UnAuthorizedException::class);
         $requestMock = $this->getRequestMock('INVALID_TOKEN');
 
         $request = $this->container->get(Request::class);
@@ -52,15 +49,13 @@ class EventControllerTest extends ControllerTestCase
 
         // Act
         $eventController = $this->container->get(EventController::class);
-
-        // Assert
-        $response = $eventController->handle($request);
-        $this->assertEquals(401, $response->getStatusCode());
+        $eventController->handle($request);
     }
 
-    public function testShouldReturn400IfTopicIsMissingFromBody()
+    public function testShouldThrowIfTopicIsMissingFromBody()
     {
         // Arrange
+        $this->expectException(DataValidationFailedException::class);
         $requestMock = $this->getRequestMock($this->serverToken);
         $requestMock
             ->expects($this->once())
@@ -72,30 +67,25 @@ class EventControllerTest extends ControllerTestCase
 
         // Act
         $eventController = $this->container->get(EventController::class);
-
-        // Assert
-        $response = $eventController->handle($request);
-        $this->assertEquals(400, $response->getStatusCode());
+        $eventController->handle($request);
     }
 
-    public function testShouldReturn400IfPayloadIsMissingFromBody()
+    public function testShouldThrowIfPayloadIsMissingFromBody()
     {
         // Arrange
+        $this->expectException(DataValidationFailedException::class);
         $requestMock = $this->getRequestMock($this->serverToken);
         $requestMock
             ->expects($this->once())
             ->method('getParsedBody')
-            ->willReturn(['topic' => 'ProductCreated']);
+            ->willReturn(['topics' => ['ProductCreated']]);
 
         $request = $this->container->get(Request::class);
         $request->setOriginalRequest($requestMock);
 
         // Act
         $eventController = $this->container->get(EventController::class);
-
-        // Assert
-        $response = $eventController->handle($request);
-        $this->assertEquals(400, $response->getStatusCode());
+        $eventController->handle($request);
     }
 
     public function testShouldReturn200IfTokenIsCorrect()

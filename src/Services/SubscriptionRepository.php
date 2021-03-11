@@ -14,47 +14,26 @@ class SubscriptionRepository
     /**
      * @var array
      */
-    private $subscriptions = [];
+    public $subscriptions = [];
 
     public function subscribe(Client $client, array $subscriptionRequest)
     {
-        $subscription = new Subscription();
-        $subscription->client = $client;
-        $subscription->callbackId = $subscriptionRequest['callbackId'];
-        $subscription->topic = $subscriptionRequest['topic'];
-        if ($subscriptionRequest['selector']){
-            $subscription->field = $subscriptionRequest['selector']['field'];
-            $subscription->operator = $subscriptionRequest['selector']['operator'];
-            $subscription->value = $subscriptionRequest['selector']['value'];
+        foreach ($subscriptionRequest['topics'] as $topic) {
+            $subscription = new Subscription();
+            $subscription->client = $client;
+            $subscription->callbackId = $subscriptionRequest['callbackId'];
+            $subscription->topic = $topic;
+            array_push($this->subscriptions, $subscription);
         }
-
-        array_push($this->subscriptions, $subscription);
     }
 
-    public function unsubscribe(Client $client, string $callbackId)
+    public function unsubscribe(Client $client, string $callbackId = null)
     {
         foreach ($this->subscriptions as $subscription) {
             $sameClient = $subscription->client->tokenId === $client->tokenId;
-            $sameCallbackId = $subscription->callbackId == $callbackId;
+            $sameCallbackId = $callbackId !== null ? $subscription->callbackId === $callbackId : true;
 
             if ($sameClient && $sameCallbackId) {
-                unset($subscription);
-            }
-        }
-    }
-
-    public function forEach(callable $callback): void
-    {
-        foreach ($this->subscriptions as $subscription) {
-            $callback($subscription);
-        }
-    }
-
-    public function removeClient(Client $client)
-    {
-        foreach ($this->subscriptions as $subscription) {
-            $sameClient = $subscription->client->tokenId === $client->tokenId;
-            if ($sameClient) {
                 unset($subscription);
             }
         }

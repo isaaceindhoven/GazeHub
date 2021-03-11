@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Services;
 
-use GazeHub\Exceptions\ConfigFileNotExists;
-use GazeHub\Exceptions\ConfigKeyNotFound;
+use GazeHub\Exceptions\ConfigFileNotExistsException;
+use GazeHub\Exceptions\ConfigKeyNotFoundException;
 use GazeHub\Services\ConfigRepository;
 use PHPUnit\Framework\TestCase;
 
@@ -38,7 +38,7 @@ class ConfigRepositoryTest extends TestCase
     public function testShouldThrowExceptionWhenConfigFileDoesNotExists()
     {
         // Arrange
-        $this->expectException(ConfigFileNotExists::class);
+        $this->expectException(ConfigFileNotExistsException::class);
         $config = new ConfigRepository();
 
         // Act
@@ -51,7 +51,7 @@ class ConfigRepositoryTest extends TestCase
     public function testShouldThrowExceptionWhenConfigKeyDoesNotExists()
     {
         // Arrange
-        $this->expectException(ConfigKeyNotFound::class);
+        $this->expectException(ConfigKeyNotFoundException::class);
         $config = new ConfigRepository();
         $config->loadConfig(__DIR__ . '/../assets/testConfig.php');
 

@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace Tests\Controllers;
 
 use GazeHub\Controllers\SubscriptionController;
+use GazeHub\Exceptions\UnAuthorizedException;
 use GazeHub\Models\Request;
 use GazeHub\Services\ClientRepository;
 use React\Stream\ThroughStream;
 
 class SubscriptionControllerTest extends ControllerTestCase
 {
-    public function testShouldReturn401IfNoTokenPresent()
+    public function testSubscribeShouldThrowIfNoTokenPresent()
     {
         // Arrange
+        $this->expectException(UnAuthorizedException::class);
         $requestMock = $this->getRequestMock();
         $request = $this->container->get(Request::class);
         $request->setOriginalRequest($requestMock);
@@ -22,16 +24,28 @@ class SubscriptionControllerTest extends ControllerTestCase
         $controller = $this->container->get(SubscriptionController::class);
 
         // Assert
-        $response = $controller->create($request);
-        $this->assertEquals(401, $response->getStatusCode());
-
-        $response = $controller->destroy($request);
-        $this->assertEquals(401, $response->getStatusCode());
+        $controller->create($request);
     }
 
-    public function testShouldReturn401WhenClientIsNotRegisteredAsSseListener()
+    public function testUnsubscribeShouldThrowIfNoTokenPresent()
     {
         // Arrange
+        $this->expectException(UnAuthorizedException::class);
+        $requestMock = $this->getRequestMock();
+        $request = $this->container->get(Request::class);
+        $request->setOriginalRequest($requestMock);
+
+        // Act
+        $controller = $this->container->get(SubscriptionController::class);
+
+        // Assert
+        $controller->destroy($request);
+    }
+
+    public function testSubscribeShouldThrowWhenClientIsNotRegistered()
+    {
+        // Arrange
+        $this->expectException(UnAuthorizedException::class);
         $requestMock = $this->getRequestMock($this->clientToken);
         $requestMock
             ->expects($this->any())
@@ -43,16 +57,28 @@ class SubscriptionControllerTest extends ControllerTestCase
 
         // Act
         $controller = $this->container->get(SubscriptionController::class);
-
-        // Assert
-        $response = $controller->create($request);
-        $this->assertEquals(401, $response->getStatusCode());
-
-        $response = $controller->destroy($request);
-        $this->assertEquals(401, $response->getStatusCode());
+        $controller->create($request);
     }
 
-    public function testShouldReturn204IfTokenIsCorrect()
+    public function testUnsubscribeShouldThrowWhenClientIsNotRegistered()
+    {
+        // Arrange
+        $this->expectException(UnAuthorizedException::class);
+        $requestMock = $this->getRequestMock($this->clientToken);
+        $requestMock
+            ->expects($this->any())
+            ->method('getParsedBody')
+            ->willReturn(['topic' => 'ProductCreated']);
+
+        $request = $this->container->get(Request::class);
+        $request->setOriginalRequest($requestMock);
+
+        // Act
+        $controller = $this->container->get(SubscriptionController::class);
+        $controller->destroy($request);
+    }
+
+    public function testSubscribeShouldReturn204IfTokenIsCorrect()
     {
         // Arrange
         $clientRepository = $this->container->get(ClientRepository::class);
@@ -61,13 +87,10 @@ class SubscriptionControllerTest extends ControllerTestCase
         $requestMock
             ->expects($this->any())
             ->method('getParsedBody')
-            ->willReturn([[
-                'topic' => 'ProductCreated',
+            ->willReturn([
                 'callbackId' => 'RANDOM',
-                'field' => 'id',
-                'operator' => '=',
-                'value' => '1'
-            ]]);
+                'topics' => ['ProductCreated'],
+            ]);
 
         $request = $this->container->get(Request::class);
         $request->setOriginalRequest($requestMock);
@@ -77,8 +100,33 @@ class SubscriptionControllerTest extends ControllerTestCase
 
         // Assert
         $response = $controller->create($request);
-        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
+        // $response = $controller->destroy($request);
+        // $this->assertEquals(204, $response->getStatusCode());
+    }
+
+    public function testUnsubscribeShouldReturn204IfTokenIsCorrect()
+    {
+        // Arrange
+        $clientRepository = $this->container->get(ClientRepository::class);
+        $clientRepository->add(new ThroughStream(), ['roles' => [], 'jti' => 'randomId']);
+        $requestMock = $this->getRequestMock($this->clientToken);
+        $requestMock
+            ->expects($this->any())
+            ->method('getParsedBody')
+            ->willReturn([
+                'callbackId' => 'RANDOM',
+                'topics' => ['ProductCreated'],
+            ]);
+
+        $request = $this->container->get(Request::class);
+        $request->setOriginalRequest($requestMock);
+
+        // Act
+        $controller = $this->container->get(SubscriptionController::class);
+
+        // Assert
         $response = $controller->destroy($request);
-        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }

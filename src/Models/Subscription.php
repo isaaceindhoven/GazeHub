@@ -20,19 +20,4 @@ class Subscription
      * @var string
      */
     public $topic;
-
-    /**
-     * @var string
-     */
-    public $field;
-
-    /**
-     * @var string
-     */
-    public $operator;
-
-    /**
-     * @var mixed
-     */
-    public $value;
 }
