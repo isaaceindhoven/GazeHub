@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace GazeHub\Services;
 
+use GazeHub\Log;
 use GazeHub\Models\Client;
 use React\Stream\ThroughStream;
 use SplObjectStorage;
@@ -48,6 +49,7 @@ class ClientRepository
         $client->tokenId = $token['jti'];
 
         $this->clients->attach($client);
+        Log::info('Connected clients', $this->clients->count());
 
         return $client;
     }
@@ -55,6 +57,7 @@ class ClientRepository
     public function remove(Client $client): void
     {
         $this->clients->detach($client);
+        Log::info('Connected clients', $this->clients->count());
     }
 
     public function forEach(callable $callback): void

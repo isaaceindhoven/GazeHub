@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace GazeHub\Controllers;
 
 use GazeHub\Exceptions\UnAuthorizedException;
+use GazeHub\Log;
 use GazeHub\Models\Request;
 use GazeHub\Services\SubscriptionRepository;
 use React\Http\Message\Response;
@@ -43,11 +44,9 @@ class EventController extends BaseController
             'payload' => 'required',
         ]);
 
-        foreach ($this->subscriptionRepository->subscriptions as $subscription) {
-            if ($validatedData['topic'] !== $subscription->topic) {
-                continue;
-            }
+        Log::info('Server wants to emit', $validatedData);
 
+        foreach ($this->subscriptionRepository->getSubscriptionsByTopic($validatedData['topic']) as $subscription) {
             $subscription->client->stream->write([
                 'callbackId' => $subscription->callbackId,
                 'payload' => $validatedData['payload'],

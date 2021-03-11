@@ -64,8 +64,8 @@ class Request
 
         $tokenInQuery = is_array($this->getQueryParams()) && array_key_exists('token', $this->getQueryParams());
 
-        if ($token === null && $tokenInQuery) {
-            $token = $this->getQueryParams['token'];
+        if ($token === '' && $tokenInQuery) {
+            $token = $this->getQueryParams()['token'];
         } elseif ($token !== null) {
             $token = str_replace('Bearer ', '', $token);
         }

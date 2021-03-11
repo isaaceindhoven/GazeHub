@@ -13,10 +13,13 @@ declare(strict_types=1);
 
 namespace GazeHub\Services;
 
+use GazeHub\Log;
 use GazeHub\Models\Client;
 use GazeHub\Models\Subscription;
 
+use function array_filter;
 use function array_push;
+use function count;
 
 class SubscriptionRepository
 {
@@ -32,7 +35,10 @@ class SubscriptionRepository
             $subscription->client = $client;
             $subscription->callbackId = $subscriptionRequest['callbackId'];
             $subscription->topic = $topic;
+
             array_push($this->subscriptions, $subscription);
+
+            Log::info('Subscribing client to topic', $topic . ',', 'active subscriptions', count($this->subscriptions));
         }
     }
 
@@ -43,8 +49,17 @@ class SubscriptionRepository
             $sameCallbackId = $callbackId !== null ? $subscription->callbackId === $callbackId : true;
 
             if ($sameClient && $sameCallbackId) {
+                Log::info('Unsubscribing client');
                 unset($subscription);
+                Log::info('Curring active subscriptions', count($this->subscriptions));
             }
         }
+    }
+
+    public function getSubscriptionsByTopic(string $topic): array
+    {
+        return array_filter($this->subscriptions, static function (Subscription $subscription) use ($topic) {
+            return $subscription->topic === $topic;
+        });
     }
 }

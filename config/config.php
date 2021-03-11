@@ -16,4 +16,5 @@ return [
     'server_host' => '0.0.0.0',
     'jwt_public_key' => __DIR__ . '/../public.key',
     'routes_config' => __DIR__ . '/routes.php',
+    'logging' => true,
 ];
