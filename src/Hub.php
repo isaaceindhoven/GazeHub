@@ -41,8 +41,8 @@ class Hub
     public function run()
     {
         $config = $this->container->get(ConfigRepository::class);
-        $port = $config->get('server_port');
         $host = $config->get('server_host');
+        $port = $config->get('server_port');
 
         $loop = Factory::create();
         $socket = new Server(sprintf('%s:%s', $host, $port), $loop);
