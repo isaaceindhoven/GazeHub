@@ -25,7 +25,7 @@ use function is_string;
 
 class RequestDataValidator
 {
-    //phpcs:ignore ObjectCalisthenics.Files.FunctionLength.ObjectCalisthenics\Sniffs\Files\FunctionLengthSniff
+    //phpcs:ignore ObjectCalisthenics.Files.FunctionLength.ObjectCalisthenics\Sniffs\Files\FunctionLengthSniff, Generic.Metrics.CyclomaticComplexity.TooHigh
     public static function validate(array $data, array $checks): array
     {
         $errors = [];
@@ -42,6 +42,10 @@ class RequestDataValidator
 
                 if ($name === 'required' && !array_key_exists($field, $data)) {
                     array_push($fieldErrors, 'must be present');
+                    break;
+                }
+
+                if (!array_key_exists($field, $data)) {
                     break;
                 }
 
