@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Services;
+namespace GazeHub\Tests\Services;
 
 use GazeHub\Exceptions\ConfigFileNotExistsException;
 use GazeHub\Exceptions\ConfigKeyNotFoundException;

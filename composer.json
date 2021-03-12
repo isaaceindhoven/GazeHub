@@ -21,7 +21,7 @@
     "autoload": {
         "psr-4": {
             "GazeHub\\": "src/",
-            "Tests\\": "tests/"
+            "GazeHub\\Tests\\": "tests/"
         }
     },
     "scripts": {

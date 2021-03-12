@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Controllers;
+namespace GazeHub\Tests\Controllers;
 
 use DI\Container;
 use PHPUnit\Framework\MockObject\MockObject;

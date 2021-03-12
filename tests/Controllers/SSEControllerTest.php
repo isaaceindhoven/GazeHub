@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Controllers;
+namespace GazeHub\Tests\Controllers;
 
 use GazeHub\Controllers\SSEController;
 use GazeHub\Exceptions\UnAuthorizedException;
