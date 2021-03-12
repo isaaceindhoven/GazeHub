@@ -32,6 +32,7 @@ class ClientRepository
 
     public function getByTokenId(string $tokenId): ?Client
     {
+        /** @var Client $client */
         foreach ($this->clients as $client) {
             if ($client->tokenId === $tokenId) {
                 return $client;
@@ -62,8 +63,14 @@ class ClientRepository
 
     public function forEach(callable $callback): void
     {
-        foreach ($this->clients as $stream) {
-            $callback($stream);
+        /** @var Client $client */
+        foreach ($this->clients as $client) {
+            $callback($client);
         }
+    }
+
+    public function count(): int
+    {
+        return $this->clients->count();
     }
 }
