@@ -55,7 +55,7 @@ class SSEController
         $scope = $this;
 
         $stream->on('close', static function () use ($scope, $client) {
-            $scope->subscriptionRepository->unsubscribe($client);
+            $scope->subscriptionRepository->remove($client);
             $scope->clientRepository->remove($client);
         });
 

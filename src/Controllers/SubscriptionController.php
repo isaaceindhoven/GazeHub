@@ -42,12 +42,12 @@ class SubscriptionController extends BaseController
     {
         $client = $this->getClient($request);
 
-        $validatedData = $this->validatedData($request->getParsedBody(), [
+        $validatedData = $request->validate([
             'callbackId' => 'required|string',
             'topics' => 'required|array:string|not_empty',
         ]);
 
-        $this->subscriptionRepository->subscribe($client, $validatedData);
+        $this->subscriptionRepository->add($client, $validatedData);
 
         return $this->json(['status' => 'subscribed'], 200);
     }
@@ -56,11 +56,11 @@ class SubscriptionController extends BaseController
     {
         $client = $this->getClient($request);
 
-        $validatedData = $this->validatedData($request->getParsedBody(), [
+        $validatedData = $request->validate([
             'callbackId' => 'required|string',
         ]);
 
-        $this->subscriptionRepository->unsubscribe($client, $validatedData['callbackId']);
+        $this->subscriptionRepository->remove($client, $validatedData['callbackId']);
 
         return $this->json(['status' => 'unsubscribed']);
     }

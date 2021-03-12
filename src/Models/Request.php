@@ -16,11 +16,11 @@ namespace GazeHub\Models;
 use Firebase\JWT\JWT;
 use GazeHub\Exceptions\UnAuthorizedException;
 use GazeHub\Services\ConfigRepository;
+use GazeHub\Services\RequestDataValidator;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
 use function array_key_exists;
-use function call_user_func_array;
 use function file_get_contents;
 use function is_array;
 use function str_replace;
@@ -37,38 +37,30 @@ class Request
      */
     private $token;
 
+    /**
+     * @var ServerRequestInterface;
+     */
+    private $originalRequest;
+
     public function __construct(ConfigRepository $config)
     {
         $this->publicKey = file_get_contents($config->get('jwt_public_key'));
     }
 
-    /**
-     * @return any
-     */
-    public function __call(string $name, array $arguments)
+    public function setOriginalRequest(ServerRequestInterface $request): void
     {
-        return call_user_func_array([$this->originalRequest, $name], $arguments);
-    }
-
-    /**
-     * @return any
-     */
-    public function __get(string $name)
-    {
-        return $this->originalRequest->$name;
+        $this->originalRequest = $request;
     }
 
     public function isAuthorized()
     {
-        $token = $this->getHeaderLine('Authorization');
+        $token = $this->getHeaderValueByKey('Authorization');
 
-        $tokenInQuery = is_array($this->getQueryParams()) && array_key_exists('token', $this->getQueryParams());
-
-        if ($token === '' && $tokenInQuery) {
-            $token = $this->getQueryParams()['token'];
-        } elseif ($token !== null) {
-            $token = str_replace('Bearer ', '', $token);
+        if ($token === null) {
+            $token = $this->getValueByKey($this->originalRequest->getQueryParams(), 'token');
         }
+
+        $token = str_replace('Bearer ', '', $token);
 
         try {
             $this->token = JWT::decode($token, $this->publicKey, ['RS256']);
@@ -77,13 +69,51 @@ class Request
         }
     }
 
-    public function setOriginalRequest(ServerRequestInterface $request): void
+    public function isRole(string $role)
     {
-        $this->originalRequest = $request;
+        $this->isAuthorized();
+
+        if ($this->getTokenPayload()['role'] !== $role) {
+            throw new UnAuthorizedException();
+        }
+    }
+
+    public function getBody(): array
+    {
+        return $this->originalRequest->getParsedBody();
     }
 
     public function getTokenPayload(): array
     {
         return (array) $this->token;
+    }
+
+    public function validate(array $checks): array
+    {
+        return RequestDataValidator::validate($this->getBody(), $checks);
+    }
+
+    /**
+     * @param null|array $arr
+     * @return null|boolean
+     */
+    private function getValueByKey($arr, string $key)
+    {
+        if (is_array($arr) && array_key_exists($key, $arr)) {
+            return $arr[$key];
+        }
+        return null;
+    }
+
+    /**
+     * @return null|string
+     */
+    private function getHeaderValueByKey(string $key)
+    {
+        $value = $this->originalRequest->getHeaderLine($key);
+        if ($value === null || $value === '') {
+            return null;
+        }
+        return $value;
     }
 }

@@ -28,7 +28,7 @@ class SubscriptionRepository
      */
     public $subscriptions = [];
 
-    public function subscribe(Client $client, array $subscriptionRequest)
+    public function add(Client $client, array $subscriptionRequest)
     {
         foreach ($subscriptionRequest['topics'] as $topic) {
             $subscription = new Subscription();
@@ -38,20 +38,24 @@ class SubscriptionRepository
 
             array_push($this->subscriptions, $subscription);
 
-            Log::info('Subscribing client to topic', $topic . ',', 'active subscriptions', count($this->subscriptions));
+            Log::info('Subscribing client to topic', $topic, 'active subscriptions', count($this->subscriptions));
         }
     }
 
-    public function unsubscribe(Client $client, string $callbackId = null)
+    public function remove(Client $client, string $callbackId = null)
     {
         foreach ($this->subscriptions as $subscription) {
             $sameClient = $subscription->client->tokenId === $client->tokenId;
             $sameCallbackId = $callbackId !== null ? $subscription->callbackId === $callbackId : true;
 
             if ($sameClient && $sameCallbackId) {
-                Log::info('Unsubscribing client');
                 unset($subscription);
-                Log::info('Curring active subscriptions', count($this->subscriptions));
+                Log::info(
+                    'Unsubscribing client from topic',
+                    $subscription->topic,
+                    'active subscriptions',
+                    count($this->subscriptions)
+                );
             }
         }
     }

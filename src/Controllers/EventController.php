@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace GazeHub\Controllers;
 
-use GazeHub\Exceptions\UnAuthorizedException;
 use GazeHub\Log;
 use GazeHub\Models\Request;
 use GazeHub\Services\SubscriptionRepository;
@@ -33,13 +32,9 @@ class EventController extends BaseController
 
     public function handle(Request $request): Response
     {
-        $request->isAuthorized();
+        $request->isRole('server');
 
-        if ($request->getTokenPayload()['role'] !== 'server') {
-            throw new UnAuthorizedException();
-        }
-
-        $validatedData = $this->validatedData($request->getParsedBody(), [
+        $validatedData = $request->validate([
             'topic' => 'required|string|max:255',
             'payload' => 'required',
         ]);
