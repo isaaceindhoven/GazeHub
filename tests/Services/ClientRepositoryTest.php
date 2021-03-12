@@ -18,6 +18,8 @@ use GazeHub\Services\ClientRepository;
 use PHPUnit\Framework\TestCase;
 use React\Stream\ThroughStream;
 
+use function uniqid;
+
 class ClientRepositoryTest extends TestCase
 {
     public function testShouldCreateAndStoreClient()
@@ -31,7 +33,6 @@ class ClientRepositoryTest extends TestCase
         $client = $clientRepo->add($stream, $tokenPayload);
 
         // Assert
-        $this->assertEquals(1, $clientRepo->count());
         $this->assertEquals($tokenPayload['roles'], $client->roles);
         $this->assertEquals($tokenPayload['jti'], $client->tokenId);
         $this->assertEquals($stream, $client->stream);
@@ -41,33 +42,36 @@ class ClientRepositoryTest extends TestCase
     {
         // Arrange
         $clientRepo = new ClientRepository();
-        $client = $this->addClientToRepo($clientRepo);
+        $client1 = $this->addClientToRepo($clientRepo);
+        $this->addClientToRepo($clientRepo);
 
         // Act
-        $foundClient = $clientRepo->getByTokenId($client->tokenId);
+        $foundClient = $clientRepo->getByTokenId($client1->tokenId);
 
         // Assert
         $this->assertNotNull($foundClient);
-        $this->assertEquals($client, $foundClient);
+        $this->assertEquals($client1, $foundClient);
     }
 
     public function testShouldRemoveClientFromRepo()
     {
         // Arrange
         $clientRepo = new ClientRepository();
-        $client = $this->addClientToRepo($clientRepo);
+        $client1 = $this->addClientToRepo($clientRepo);
+        $client2 = $this->addClientToRepo($clientRepo);
 
         // Act
-        $clientRepo->remove($client);
+        $clientRepo->remove($client1);
 
         // Assert
-        $this->assertEquals(0, $clientRepo->count());
+        $this->assertNull($clientRepo->getByTokenId($client1->tokenId));
+        $this->assertEquals($client2, $clientRepo->getByTokenId($client2->tokenId));
     }
 
     private function addClientToRepo(ClientRepository $repository): Client
     {
         $stream = new ThroughStream();
-        $tokenPayload = ['roles' => ['admin', 'client'], 'jti' => 'randomId'];
+        $tokenPayload = ['roles' => ['admin', 'client'], 'jti' => uniqid()];
         return $repository->add($stream, $tokenPayload);
     }
 }

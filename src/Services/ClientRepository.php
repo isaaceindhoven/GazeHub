@@ -16,18 +16,20 @@ namespace GazeHub\Services;
 use GazeHub\Log;
 use GazeHub\Models\Client;
 use React\Stream\ThroughStream;
-use SplObjectStorage;
+
+use function array_push;
+use function count;
 
 class ClientRepository
 {
     /**
-     * @var SplObjectStorage
+     * @var Client[]
      */
-    private $clients;
+    private $clients = [];
 
     public function __construct()
     {
-        $this->clients = new SplObjectStorage();
+        $this->clients = [];
     }
 
     public function getByTokenId(string $tokenId): ?Client
@@ -49,16 +51,21 @@ class ClientRepository
         $client->roles = $token['roles'];
         $client->tokenId = $token['jti'];
 
-        $this->clients->attach($client);
-        Log::info('Connected clients', $this->clients->count());
+        array_push($this->clients, $client);
+        Log::info('Connected clients', count($this->clients));
 
         return $client;
     }
 
-    public function remove(Client $client): void
+    public function remove(Client $clientToRemove): void
     {
-        $this->clients->detach($client);
-        Log::info('Connected clients', $this->clients->count());
+        foreach ($this->clients as $index => $client) {
+            if ($client->tokenId === $clientToRemove->tokenId) {
+                unset($this->clients[$index]);
+                break;
+            }
+        }
+        Log::info('Connected clients', count($this->clients));
     }
 
     public function forEach(callable $callback): void
@@ -67,10 +74,5 @@ class ClientRepository
         foreach ($this->clients as $client) {
             $callback($client);
         }
-    }
-
-    public function count(): int
-    {
-        return $this->clients->count();
     }
 }
