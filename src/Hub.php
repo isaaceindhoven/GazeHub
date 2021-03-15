@@ -39,13 +39,13 @@ class Hub
     public function run()
     {
         $config = $this->container->get(ConfigRepository::class);
-        $config->get('logging') ? Log::enable() : null;
 
         $host = $config->get('server_host');
         $port = $config->get('server_port');
 
         $loop = Factory::create();
         $socket = new Server(sprintf('%s:%s', $host, $port), $loop);
+        $config->get('logging') ? Log::enable($loop) : null;
 
         $server = new HttpServer(
             $loop,

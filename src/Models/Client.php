@@ -34,6 +34,6 @@ class Client
 
     public function send(array $data)
     {
-        $this->client->stream->write($data);
+        $this->stream->write($data);
     }
 }

@@ -13,12 +13,17 @@ declare(strict_types=1);
 
 namespace GazeHub;
 
+use React\EventLoop\LoopInterface;
+use React\Stream\WritableResourceStream;
+
 use function array_map;
 use function date;
 use function implode;
 use function is_string;
 use function json_encode;
 use function sprintf;
+
+use const STDOUT;
 
 class Log
 {
@@ -27,9 +32,17 @@ class Log
      */
     private static $enabled = false;
 
-    public static function enable()
+    /**
+     * @var WritableResourceStream
+     */
+    private static $stream;
+
+    public static function enable(LoopInterface $loop)
     {
         self::$enabled = true;
+
+        self::$stream = new WritableResourceStream(STDOUT, $loop);
+
         self::warn('IMPORTANT: Logging enabled!');
     }
 
@@ -43,7 +56,9 @@ class Log
                 return $x;
             }, $args);
 
-            echo sprintf("[%s] \033[%sm%s \033[0m\n", date('c'), $code, implode(' ', $args));
+            self::$stream->write(
+                sprintf("[%s] \033[%sm%s \033[0m\n", date('c'), $code, implode(' ', $args))
+            );
         }
     }
 
