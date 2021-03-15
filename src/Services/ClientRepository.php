@@ -71,12 +71,4 @@ class ClientRepository
         }
         Log::info('Connected clients', count($this->clients));
     }
-
-    public function forEach(callable $callback): void
-    {
-        /** @var Client $client */
-        foreach ($this->clients as $client) {
-            $callback($client);
-        }
-    }
 }
