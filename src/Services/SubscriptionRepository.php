@@ -29,12 +29,37 @@ class SubscriptionRepository
      */
     private $subscriptions = [];
 
-    public function add(Client $client, array $subscriptionRequest)
+    /**
+     * Find subscriptions by topic and, optionally, by client role.
+     *
+     * @param string        $topic      The topic to find subs for
+     * @param string|null   $role       Optional, the rule to find subs for
+     * @return Subscription[]
+     */
+    public function getSubscriptionsByTopicAndRole(string $topic, string $role = null): array
     {
-        foreach ($subscriptionRequest['topics'] as $topic) {
+        return array_filter($this->subscriptions, static function (Subscription $subscription) use ($topic, $role) {
+            if ($role !== null) {
+                return $subscription->topic === $topic && in_array($role, $subscription->client->roles);
+            }
+
+            return $subscription->topic === $topic;
+        });
+    }
+
+    /**
+     * Create and add subscription(s) to the repository, one subscription will be created per topic.
+     *
+     * @param Client        $client         The client related to the subs
+     * @param array         $topics         The topics to subscribe to
+     * @param string        $callbackId     The callbackId related to the subs
+     */
+    public function add(Client $client, array $topics, string $callbackId)
+    {
+        foreach ($topics as $topic) {
             $subscription = new Subscription();
             $subscription->client = $client;
-            $subscription->callbackId = $subscriptionRequest['callbackId'];
+            $subscription->callbackId = $callbackId;
             $subscription->topic = $topic;
 
             array_push($this->subscriptions, $subscription);
@@ -43,6 +68,12 @@ class SubscriptionRepository
         }
     }
 
+    /**
+     * Remove subscription(s) from repository
+     *
+     * @param Client        $client     The client related to the subs
+     * @param array|null    $topics     When supplied, only the subs matching one of these topic will be removed
+     */
     public function remove(Client $client, array $topics = null)
     {
         foreach ($this->subscriptions as $i => $subscription) {
@@ -60,16 +91,5 @@ class SubscriptionRepository
                 );
             }
         }
-    }
-
-    public function getSubscriptionsByTopicAndRole(string $topic, string $role = null): array
-    {
-        return array_filter($this->subscriptions, static function (Subscription $subscription) use ($topic, $role) {
-            if ($role !== null) {
-                return $subscription->topic === $topic && in_array($role, $subscription->client->roles);
-            }
-
-            return $subscription->topic === $topic;
-        });
     }
 }

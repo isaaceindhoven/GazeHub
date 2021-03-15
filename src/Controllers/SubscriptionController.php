@@ -47,7 +47,7 @@ class SubscriptionController extends BaseController
             'topics' => 'required|array:string|not_empty',
         ]);
 
-        $this->subscriptionRepository->add($client, $validatedData);
+        $this->subscriptionRepository->add($client, $validatedData['topics'], $validatedData['callbackId']);
 
         return $this->json(['status' => 'subscribed'], 200);
     }

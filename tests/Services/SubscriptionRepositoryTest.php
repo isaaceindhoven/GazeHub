@@ -31,7 +31,7 @@ class SubscriptionRepositoryTest extends TestCase
         $subscriptionRequest = ['topics' => ['ABC'], 'callbackId' => uniqid()];
 
         // Act
-        $subscriptionRepository->add($client1, $subscriptionRequest);
+        $subscriptionRepository->add($client1, $subscriptionRequest['topics'], $subscriptionRequest['callbackId']);
 
         // Assert
         $subs = $subscriptionRepository->getSubscriptionsByTopicAndRole('ABC');
@@ -50,8 +50,8 @@ class SubscriptionRepositoryTest extends TestCase
         $subscriptionRequest2 = ['topics' => ['ABC'], 'callbackId' => uniqid()];
 
         // Act
-        $subscriptionRepository->add($client1, $subscriptionRequest1);
-        $subscriptionRepository->add($client2, $subscriptionRequest2);
+        $subscriptionRepository->add($client1, $subscriptionRequest1['topics'], $subscriptionRequest1['callbackId']);
+        $subscriptionRepository->add($client2, $subscriptionRequest2['topics'], $subscriptionRequest2['callbackId']);
         $subscriptionRepository->remove($client1);
 
         // Assert
@@ -69,7 +69,7 @@ class SubscriptionRepositoryTest extends TestCase
         $subscriptionRequest = ['topics' => ['1', '2'], 'callbackId' => uniqid()];
 
         // Act
-        $subscriptionRepository->add($client1, $subscriptionRequest);
+        $subscriptionRepository->add($client1, $subscriptionRequest['topics'], $subscriptionRequest['callbackId']);
         $subscriptionRepository->remove($client1, ['2']);
 
         // Assert

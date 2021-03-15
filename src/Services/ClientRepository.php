@@ -33,9 +33,14 @@ class ClientRepository
         $this->clients = [];
     }
 
+    /**
+     * Find client by Token Id (jti claim in JWT)
+     *
+     * @param string        $tokenId        Token ID in JWT jti claim
+     * @return Client|null
+     */
     public function getByTokenId(string $tokenId): ?Client
     {
-        /** @var Client $client */
         foreach ($this->clients as $client) {
             if ($client->tokenId === $tokenId) {
                 return $client;
@@ -45,6 +50,12 @@ class ClientRepository
         return null;
     }
 
+    /**
+     * Create and add a new client to this repository
+     *
+     * @param array         $token      JWT payload/claims
+     * @return Client                   Newly created client
+     */
     public function add(array $token): Client
     {
         $client = new Client();
@@ -61,6 +72,11 @@ class ClientRepository
         return $client;
     }
 
+    /**
+     * Remove client from repository, the stream is not closed automatically.
+     *
+     * @param Client        $clientToRemove
+     */
     public function remove(Client $clientToRemove): void
     {
         foreach ($this->clients as $index => $client) {

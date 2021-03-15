@@ -27,7 +27,13 @@ class ConfigRepository
      */
     private $config;
 
-    public function loadConfig(string $path = null): void
+    /**
+     * Load configuration file in memory, if path is null, /config/config.php is loaded
+     *
+     * @param string|null       $path           Path to config file to load
+     * @throws ConfigFileNotExistsException     Thrown when the config file does not exist
+     */
+    public function loadConfig(string $path = null)
     {
         if ($path === null) {
             $path = __DIR__ . '/../../config/config.php';
@@ -41,7 +47,12 @@ class ConfigRepository
     }
 
     /**
-     * @return mixed
+     * Get a value from the loaded configuration
+     *
+     * @param string        $key            Key to load value for
+     * @return mixed                        Value from configuration
+     * @throws ConfigFileNotExistsException Thrown when the config file does not exist
+     * @throws ConfigKeyNotFoundException   Thrown when key not found in config file
      */
     public function get(string $key)
     {

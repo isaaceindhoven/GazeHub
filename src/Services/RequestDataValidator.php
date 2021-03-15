@@ -25,6 +25,23 @@ use function is_string;
 
 class RequestDataValidator
 {
+    /**
+     * Validate data using validation rules
+     *
+     * An example set of validation rules:
+     * <code>
+     * $checks = [
+     *  'username' => 'required|string',
+     *  'password' => 'required|string',
+     *  'attributes' => 'required|array:string|not_empty',
+     * ];
+     * </code>
+     *
+     * @param array         $data       The data to validate
+     * @param array         $checks     The validation rules to check
+     * @return array                    Validated data
+     * @throws DataValidationFailedException    Thrown when the data does not pass all checks
+     */
     //phpcs:ignore ObjectCalisthenics.Files.FunctionLength.ObjectCalisthenics\Sniffs\Files\FunctionLengthSniff, Generic.Metrics.CyclomaticComplexity.TooHigh
     public static function validate(array $data, array $checks): array
     {
