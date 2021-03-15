@@ -57,10 +57,10 @@ class SubscriptionController extends BaseController
         $client = $this->getClient($request);
 
         $validatedData = $request->validate([
-            'callbackId' => 'required|string',
+            'topics' => 'required|array:string|not_empty',
         ]);
 
-        $this->subscriptionRepository->remove($client, $validatedData['callbackId']);
+        $this->subscriptionRepository->remove($client, $validatedData['topics']);
 
         return $this->json(['status' => 'unsubscribed']);
     }

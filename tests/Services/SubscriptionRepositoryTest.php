@@ -66,20 +66,18 @@ class SubscriptionRepositoryTest extends TestCase
         // Arrange
         $subscriptionRepository = new SubscriptionRepository();
         $client1 = $this->createClient();
-        $subscriptionRequest1 = ['topics' => ['1'], 'callbackId' => uniqid()];
-        $subscriptionRequest2 = ['topics' => ['1'], 'callbackId' => uniqid()];
+        $subscriptionRequest = ['topics' => ['1', '2'], 'callbackId' => uniqid()];
 
         // Act
-        $subscriptionRepository->add($client1, $subscriptionRequest1);
-        $subscriptionRepository->add($client1, $subscriptionRequest2);
-        $subscriptionRepository->remove($client1, $subscriptionRequest1['callbackId']);
+        $subscriptionRepository->add($client1, $subscriptionRequest);
+        $subscriptionRepository->remove($client1, ['2']);
 
         // Assert
         $subs = $subscriptionRepository->getSubscriptionsByTopic('1');
         $this->assertEquals(1, count($subs));
 
-        $this->assertEquals($subs[1]->client->tokenId, $client1->tokenId);
-        $this->assertEquals($subs[1]->callbackId, $subscriptionRequest2['callbackId']);
+        $this->assertEquals($subs[0]->client->tokenId, $client1->tokenId);
+        $this->assertEquals($subs[0]->callbackId, $subscriptionRequest['callbackId']);
     }
 
     private function createClient(array $roles = []): Client
