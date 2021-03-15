@@ -16,7 +16,6 @@ namespace GazeHub\Tests\Services;
 use GazeHub\Models\Client;
 use GazeHub\Services\ClientRepository;
 use PHPUnit\Framework\TestCase;
-use React\Stream\ThroughStream;
 
 use function uniqid;
 
@@ -26,16 +25,14 @@ class ClientRepositoryTest extends TestCase
     {
         // Arrange
         $clientRepo = new ClientRepository();
-        $stream = new ThroughStream();
         $tokenPayload = ['roles' => ['admin', 'client'], 'jti' => 'randomId'];
 
         // Act
-        $client = $clientRepo->add($stream, $tokenPayload);
+        $client = $clientRepo->add($tokenPayload);
 
         // Assert
         $this->assertEquals($tokenPayload['roles'], $client->roles);
         $this->assertEquals($tokenPayload['jti'], $client->tokenId);
-        $this->assertEquals($stream, $client->stream);
     }
 
     public function testShouldReturnClientBasedOnTokenId()
@@ -70,8 +67,7 @@ class ClientRepositoryTest extends TestCase
 
     private function addClientToRepo(ClientRepository $repository): Client
     {
-        $stream = new ThroughStream();
         $tokenPayload = ['roles' => ['admin', 'client'], 'jti' => uniqid()];
-        return $repository->add($stream, $tokenPayload);
+        return $repository->add($tokenPayload);
     }
 }

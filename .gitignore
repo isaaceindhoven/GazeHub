@@ -4,3 +4,4 @@
 /temp
 *.cache
 coverage/
+.tmp_staging

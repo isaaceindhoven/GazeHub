@@ -19,6 +19,7 @@ use React\Stream\ThroughStream;
 
 use function array_push;
 use function count;
+use function json_encode;
 
 class ClientRepository
 {
@@ -44,12 +45,15 @@ class ClientRepository
         return null;
     }
 
-    public function add(ThroughStream $stream, array $token): Client
+    public function add(array $token): Client
     {
         $client = new Client();
-        $client->stream = $stream;
         $client->roles = $token['roles'];
         $client->tokenId = $token['jti'];
+        $client->stream = new ThroughStream(static function (array $data) {
+            Log::info('Sending data to client:', $data);
+            return 'data: ' . json_encode($data) . "\n\n";
+        });
 
         array_push($this->clients, $client);
         Log::info('Connected clients', count($this->clients));

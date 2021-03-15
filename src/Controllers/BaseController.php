@@ -28,9 +28,4 @@ abstract class BaseController
     {
         return $this->end(json_encode($data), [ 'Content-Type' => 'application/json' ], $statusCode);
     }
-
-    protected function html(string $html, int $statusCode = 200): Response
-    {
-        return $this->end($html, [ 'Content-Type' => 'text/html' ], $statusCode);
-    }
 }

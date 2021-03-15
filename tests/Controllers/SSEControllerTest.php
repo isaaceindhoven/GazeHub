@@ -15,7 +15,11 @@ namespace GazeHub\Tests\Controllers;
 
 use GazeHub\Controllers\SSEController;
 use GazeHub\Exceptions\UnAuthorizedException;
+use GazeHub\Models\Client;
 use GazeHub\Models\Request;
+use GazeHub\Services\ClientRepository;
+use GazeHub\Services\SubscriptionRepository;
+use React\Stream\ThroughStream;
 
 class SSEControllerTest extends ControllerTestCase
 {
@@ -46,5 +50,26 @@ class SSEControllerTest extends ControllerTestCase
         // Assert
         $response = $controller->handle($request);
         $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testSSEConnectionClosed()
+    {
+        $clientRepositoryMoch = $this->createMock(ClientRepository::class);
+        $subscriptionRepositoryMoch = $this->createMock(SubscriptionRepository::class);
+        $requestMoch = $this->createMock(Request::class);
+
+        $client = new Client();
+        $client->stream = new ThroughStream();
+
+        $clientRepositoryMoch->method('add')->willReturn($client);
+
+        $clientRepositoryMoch->expects($this->once())->method('remove');
+        $subscriptionRepositoryMoch->expects($this->once())->method('remove');
+
+        $sseController = new SSEController($clientRepositoryMoch, $subscriptionRepositoryMoch);
+
+        $sseController->handle($requestMoch);
+
+        $client->stream->end();
     }
 }

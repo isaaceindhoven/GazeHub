@@ -16,7 +16,9 @@ namespace GazeHub\Tests\Controllers;
 use GazeHub\Controllers\EventController;
 use GazeHub\Exceptions\DataValidationFailedException;
 use GazeHub\Exceptions\UnAuthorizedException;
+use GazeHub\Models\Client;
 use GazeHub\Models\Request;
+use GazeHub\Models\Subscription;
 use GazeHub\Services\SubscriptionRepository;
 
 class EventControllerTest extends ControllerTestCase
@@ -94,5 +96,29 @@ class EventControllerTest extends ControllerTestCase
         // Assert
         $response = $eventController->handle($request);
         $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testIfClientSendIsCalled()
+    {
+        $requestMoch = $this->createMock(Request::class);
+        $requestMoch->method('validate')->willReturn([
+            'topic' => 'ProductCreated',
+            'payload' => ['id' => 1, 'name' => 'Shirt'],
+        ]);
+
+        $subscriptionRepoMoch = $this->createMock(SubscriptionRepository::class);
+        $subscription = new Subscription();
+        $subscription->client = $this->createMock(Client::class);
+        $subscription->client->expects($this->once())->method('send');
+        $subscription->callbackId = 'ABC';
+        $subscription->topic = 'ProductCreated';
+
+        $subscriptionRepoMoch->method('getSubscriptionsByTopic')->willReturn([
+            $subscription,
+        ]);
+
+        $eventController = new EventController($subscriptionRepoMoch);
+
+        $eventController->handle($requestMoch);
     }
 }

@@ -13,14 +13,10 @@ declare(strict_types=1);
 
 namespace GazeHub\Controllers;
 
-use GazeHub\Log;
 use GazeHub\Models\Request;
 use GazeHub\Services\ClientRepository;
 use GazeHub\Services\SubscriptionRepository;
 use React\Http\Message\Response;
-use React\Stream\ThroughStream;
-
-use function json_encode;
 
 class SSEController
 {
@@ -45,20 +41,15 @@ class SSEController
     {
         $request->isAuthorized();
 
-        $stream = new ThroughStream(static function (array $data) {
-            Log::info('Sending data to client:', $data);
-            return 'data: ' . json_encode($data) . "\n\n";
-        });
-
-        $client = $this->clientRepository->add($stream, $request->getTokenPayload());
+        $client = $this->clientRepository->add($request->getTokenPayload());
 
         $scope = $this;
 
-        $stream->on('close', static function () use ($scope, $client) {
+        $client->stream->on('close', static function () use ($scope, $client) {
             $scope->subscriptionRepository->remove($client);
             $scope->clientRepository->remove($client);
         });
 
-        return new Response(200, [ 'Content-Type' => 'text/event-stream' ], $stream);
+        return new Response(200, [ 'Content-Type' => 'text/event-stream' ], $client->stream);
     }
 }

@@ -4,6 +4,7 @@
     <file>.</file>
     <!-- exclude paths -->
     <exclude-pattern>./vendor</exclude-pattern>
+    <exclude-pattern>./coverage</exclude-pattern>
 
     <!-- include all rules in isaac ruleset -->
     <rule ref="ISAAC"/>

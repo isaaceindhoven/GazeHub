@@ -17,7 +17,6 @@ use GazeHub\Controllers\SubscriptionController;
 use GazeHub\Exceptions\UnAuthorizedException;
 use GazeHub\Models\Request;
 use GazeHub\Services\ClientRepository;
-use React\Stream\ThroughStream;
 
 class SubscriptionControllerTest extends ControllerTestCase
 {
@@ -91,7 +90,7 @@ class SubscriptionControllerTest extends ControllerTestCase
     {
         // Arrange
         $clientRepository = $this->container->get(ClientRepository::class);
-        $clientRepository->add(new ThroughStream(), ['roles' => [], 'jti' => 'randomId']);
+        $clientRepository->add(['roles' => [], 'jti' => 'randomId']);
         $requestMock = $this->getRequestMock($this->clientToken);
         $requestMock
             ->expects($this->any())
@@ -118,7 +117,7 @@ class SubscriptionControllerTest extends ControllerTestCase
     {
         // Arrange
         $clientRepository = $this->container->get(ClientRepository::class);
-        $clientRepository->add(new ThroughStream(), ['roles' => [], 'jti' => 'randomId']);
+        $clientRepository->add(['roles' => [], 'jti' => 'randomId']);
         $requestMock = $this->getRequestMock($this->clientToken);
         $requestMock
             ->expects($this->any())

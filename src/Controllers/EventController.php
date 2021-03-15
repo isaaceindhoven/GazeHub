@@ -15,6 +15,7 @@ namespace GazeHub\Controllers;
 
 use GazeHub\Log;
 use GazeHub\Models\Request;
+use GazeHub\Models\Subscription;
 use GazeHub\Services\SubscriptionRepository;
 use React\Http\Message\Response;
 
@@ -41,8 +42,9 @@ class EventController extends BaseController
 
         Log::info('Server wants to emit', $validatedData);
 
+        /** @var Subscription $subscription */
         foreach ($this->subscriptionRepository->getSubscriptionsByTopic($validatedData['topic']) as $subscription) {
-            $subscription->client->stream->write([
+            $subscription->client->send([
                 'callbackId' => $subscription->callbackId,
                 'payload' => $validatedData['payload'],
             ]);
