@@ -36,14 +36,18 @@ class EventController extends BaseController
         $request->isRole('server');
 
         $validatedData = $request->validate([
-            'topic' => 'required|string|max:255',
+            'topic' => 'required|string',
             'payload' => 'required',
+            'role' => 'string',
         ]);
 
         Log::info('Server wants to emit', $validatedData);
 
-        /** @var Subscription $subscription */
-        foreach ($this->subscriptionRepository->getSubscriptionsByTopic($validatedData['topic']) as $subscription) {
+        /** @var Subscription[] $subscriptions */
+        $subscriptions = $this->subscriptionRepository
+            ->getSubscriptionsByTopicAndRole($validatedData['topic'], $validatedData['role']);
+
+        foreach ($subscriptions as $subscription) {
             $subscription->client->send([
                 'callbackId' => $subscription->callbackId,
                 'payload' => $validatedData['payload'],

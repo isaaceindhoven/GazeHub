@@ -85,7 +85,7 @@ class EventControllerTest extends ControllerTestCase
         $requestMock
             ->expects($this->once())
             ->method('getParsedBody')
-            ->willReturn(['topic' => 'ProductCreated', 'payload' => ['id' => 1, 'name' => 'Shirt']]);
+            ->willReturn(['topic' => 'ProductCreated', 'payload' => ['id' => 1, 'name' => 'Shirt'], 'role' => 'admin']);
 
         $request = $this->container->get(Request::class);
         $request->setOriginalRequest($requestMock);
@@ -104,6 +104,7 @@ class EventControllerTest extends ControllerTestCase
         $requestMoch->method('validate')->willReturn([
             'topic' => 'ProductCreated',
             'payload' => ['id' => 1, 'name' => 'Shirt'],
+            'role' => 'admin',
         ]);
 
         $subscriptionRepoMoch = $this->createMock(SubscriptionRepository::class);
@@ -113,7 +114,7 @@ class EventControllerTest extends ControllerTestCase
         $subscription->callbackId = 'ABC';
         $subscription->topic = 'ProductCreated';
 
-        $subscriptionRepoMoch->method('getSubscriptionsByTopic')->willReturn([
+        $subscriptionRepoMoch->method('getSubscriptionsByTopicAndRole')->willReturn([
             $subscription,
         ]);
 

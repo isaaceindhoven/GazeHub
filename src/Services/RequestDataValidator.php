@@ -46,6 +46,7 @@ class RequestDataValidator
                 }
 
                 if (!array_key_exists($field, $data)) {
+                    $data[$field] = null;
                     break;
                 }
 

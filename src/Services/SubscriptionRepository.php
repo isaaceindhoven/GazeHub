@@ -62,9 +62,13 @@ class SubscriptionRepository
         }
     }
 
-    public function getSubscriptionsByTopic(string $topic): array
+    public function getSubscriptionsByTopicAndRole(string $topic, string $role = null): array
     {
-        return array_filter($this->subscriptions, static function (Subscription $subscription) use ($topic) {
+        return array_filter($this->subscriptions, static function (Subscription $subscription) use ($topic, $role) {
+            if ($role !== null) {
+                return $subscription->topic === $topic && in_array($role, $subscription->client->roles);
+            }
+
             return $subscription->topic === $topic;
         });
     }

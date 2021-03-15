@@ -106,6 +106,6 @@ class RequestDataValidatorTest extends TestCase
         $result = RequestDataValidator::validate($data, $checks);
 
         // Assert
-        $this->assertEquals($data, $result);
+        $this->assertEquals($data + ['not_required' => null], $result);
     }
 }
