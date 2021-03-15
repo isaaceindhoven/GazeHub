@@ -16,11 +16,13 @@ namespace GazeHub\Middlewares;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Http\Message\Response;
 
+use function strtoupper;
+
 class CorsMiddleware
 {
     public function handle(ServerRequestInterface $request, callable $next): Response
     {
-        if ($request->getMethod() === 'OPTIONS') {
+        if (strtoupper($request->getMethod()) === 'OPTIONS') {
             return $this->addCorsHeaders($request, new Response(204));
         }
 
