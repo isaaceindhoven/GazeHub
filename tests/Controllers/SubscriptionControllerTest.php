@@ -90,7 +90,7 @@ class SubscriptionControllerTest extends ControllerTestCase
     {
         // Arrange
         $clientRepository = $this->container->get(ClientRepository::class);
-        $clientRepository->add(['roles' => [], 'jti' => 'randomId']);
+        $clientRepository->add([], 'randomId');
         $requestMock = $this->getRequestMock($this->clientToken);
         $requestMock
             ->expects($this->any())
@@ -117,7 +117,7 @@ class SubscriptionControllerTest extends ControllerTestCase
     {
         // Arrange
         $clientRepository = $this->container->get(ClientRepository::class);
-        $clientRepository->add(['roles' => [], 'jti' => 'randomId']);
+        $clientRepository->add([], 'randomId');
         $requestMock = $this->getRequestMock($this->clientToken);
         $requestMock
             ->expects($this->any())

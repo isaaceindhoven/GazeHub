@@ -51,7 +51,7 @@ class SubscriptionRepository
      * Create and add subscription(s) to the repository, one subscription will be created per topic.
      *
      * @param Client        $client         The client related to the subs
-     * @param array         $topics         The topics to subscribe to
+     * @param string[]      $topics         The topics to subscribe to
      * @param string        $callbackId     The callbackId related to the subs
      */
     public function add(Client $client, array $topics, string $callbackId)
@@ -72,7 +72,7 @@ class SubscriptionRepository
      * Remove subscription(s) from repository
      *
      * @param Client        $client     The client related to the subs
-     * @param array|null    $topics     When supplied, only the subs matching one of these topic will be removed
+     * @param string[]|null $topics     When supplied, only the subs matching one of these topic will be removed
      */
     public function remove(Client $client, array $topics = null)
     {

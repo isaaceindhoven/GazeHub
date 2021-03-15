@@ -28,7 +28,7 @@ class ClientRepositoryTest extends TestCase
         $tokenPayload = ['roles' => ['admin', 'client'], 'jti' => 'randomId'];
 
         // Act
-        $client = $clientRepo->add($tokenPayload);
+        $client = $clientRepo->add($tokenPayload['roles'], $tokenPayload['jti']);
 
         // Assert
         $this->assertEquals($tokenPayload['roles'], $client->roles);
@@ -67,7 +67,6 @@ class ClientRepositoryTest extends TestCase
 
     private function addClientToRepo(ClientRepository $repository): Client
     {
-        $tokenPayload = ['roles' => ['admin', 'client'], 'jti' => uniqid()];
-        return $repository->add($tokenPayload);
+        return $repository->add(['admin', 'client'], uniqid());
     }
 }

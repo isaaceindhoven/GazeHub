@@ -53,14 +53,15 @@ class ClientRepository
     /**
      * Create and add a new client to this repository
      *
-     * @param array         $token      JWT payload/claims
+     * @param array         $roles      Client roles
+     * @param string        $tokenId    Client token id
      * @return Client                   Newly created client
      */
-    public function add(array $token): Client
+    public function add(array $roles, string $tokenId): Client
     {
         $client = new Client();
-        $client->roles = $token['roles'];
-        $client->tokenId = $token['jti'];
+        $client->roles = $roles;
+        $client->tokenId = $tokenId;
         $client->stream = new ThroughStream(static function (array $data) {
             Log::info('Sending data to client:', $data);
             return 'data: ' . json_encode($data) . "\n\n";

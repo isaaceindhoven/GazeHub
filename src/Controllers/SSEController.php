@@ -41,7 +41,9 @@ class SSEController
     {
         $request->isAuthorized();
 
-        $client = $this->clientRepository->add($request->getTokenPayload());
+        $payload = $request->getTokenPayload();
+
+        $client = $this->clientRepository->add($payload['roles'], $payload['jti']);
 
         $scope = $this;
 
