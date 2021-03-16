@@ -43,8 +43,9 @@ class SubscriptionController extends BaseController
         $client = $this->getClient($request);
 
         $validatedData = $request->validate([
-            'callbackId' => 'required|string',
-            'topics' => 'required|array:string|not_empty',
+            'callbackId' => 'required|regex:/.+/',
+            'topics' => 'required|array',
+            'topics.*' => 'required|regex:/.+/',
         ]);
 
         $this->subscriptionRepository->add($client, $validatedData['topics'], $validatedData['callbackId']);
@@ -57,7 +58,8 @@ class SubscriptionController extends BaseController
         $client = $this->getClient($request);
 
         $validatedData = $request->validate([
-            'topics' => 'required|array:string|not_empty',
+            'topics' => 'required|array',
+            'topics.*' => 'required|regex:/.+/',
         ]);
 
         $this->subscriptionRepository->remove($client, $validatedData['topics']);

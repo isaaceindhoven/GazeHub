@@ -9,7 +9,8 @@
         "react/stream": "^1.1",
         "php-di/php-di": "^6.3",
         "firebase/php-jwt": "^5.2",
-        "ext-json": "*"
+        "ext-json": "*",
+        "rakit/validation": "^1.4"
     },
     "require-dev": {
         "isaac/php-code-sniffer-standard": "^20.0",

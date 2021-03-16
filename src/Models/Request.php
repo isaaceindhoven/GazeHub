@@ -14,10 +14,11 @@ declare(strict_types=1);
 namespace GazeHub\Models;
 
 use Firebase\JWT\JWT;
+use GazeHub\Exceptions\DataValidationFailedException;
 use GazeHub\Exceptions\UnAuthorizedException;
 use GazeHub\Services\ConfigRepository;
-use GazeHub\Services\RequestDataValidator;
 use Psr\Http\Message\ServerRequestInterface;
+use Rakit\Validation\Validator;
 use Throwable;
 
 use function array_key_exists;
@@ -90,7 +91,15 @@ class Request
 
     public function validate(array $checks): array
     {
-        return RequestDataValidator::validate($this->getBody(), $checks);
+        $validator = new Validator();
+
+        $validation = $validator->validate($this->getBody(), $checks);
+
+        if ($validation->fails()) {
+            throw new DataValidationFailedException($validation->errors()->toArray());
+        }
+
+        return $validation->getValidData();
     }
 
     /**

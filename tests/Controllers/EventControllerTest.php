@@ -78,6 +78,26 @@ class EventControllerTest extends ControllerTestCase
         $eventController->handle($request);
     }
 
+    public function testShouldReturn200EvenIfRoleNotPresent()
+    {
+        // Arrange
+        $requestMock = $this->getRequestMock($this->serverToken);
+        $requestMock
+            ->expects($this->once())
+            ->method('getParsedBody')
+            ->willReturn(['topic' => 'ProductCreated', 'payload' => ['id' => 1, 'name' => 'Shirt'], 'role' => '']);
+
+        $request = $this->container->get(Request::class);
+        $request->setOriginalRequest($requestMock);
+
+        // Act
+        $eventController = $this->container->get(EventController::class);
+
+        // Assert
+        $response = $eventController->handle($request);
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testShouldReturn200IfTokenIsCorrect()
     {
         // Arrange

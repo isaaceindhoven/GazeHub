@@ -36,9 +36,9 @@ class EventController extends BaseController
         $request->isRole('server');
 
         $validatedData = $request->validate([
-            'topic' => 'required|string',
+            'topic' => 'required|regex:/.+/',
             'payload' => 'required',
-            'role' => 'string',
+            'role' => 'regex:/.+/',
         ]);
 
         Log::info('Server wants to emit', $validatedData);
