@@ -12,16 +12,17 @@
 declare(strict_types=1);
 
 use GazeHub\Log;
+use GazeHub\Services\Environment;
 
 return [
     'routes_config' => __DIR__ . '/routes.php',
 
-    'server_port' => '3333',
-    'server_host' => '0.0.0.0',
+    'server_port' => Environment::get('GAZEHUB_SERVER_HOST', '3333'),
+    'server_host' => Environment::get('GAZEHUB_SERVER_PORT', '0.0.0.0'),
 
-    'jwt_public_key' => __DIR__ . '/../public.key',
-    'jwt_verify' => false,
-    'jwt_alg' => 'RS256',
+    'jwt_public_key' => Environment::get('GAZEHUB_JWT_PUBLIC_KEY', __DIR__ . '/../public.key'),
+    'jwt_verify' => (bool) Environment::get('GAZEHUB_JWT_VERIFY', true),
+    'jwt_alg' => Environment::get('GAZEHUB_JWT_ALG', 'RS256'),
 
-    'log_level' => Log::DEBUG,
+    'log_level' => (int) Environment::get('GAZEHUB_LOG_LEVEL', Log::INFO),
 ];
