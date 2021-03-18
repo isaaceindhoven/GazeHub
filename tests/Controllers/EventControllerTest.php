@@ -45,18 +45,24 @@ class EventControllerTest extends ControllerTestCase
     public function testShouldThrowIfTopicIsMissingFromBody()
     {
         // Arrange
-        $this->expectException(DataValidationFailedException::class);
-        $requestMock = $this->getRequestMock($this->serverToken);
-        $requestMock
+        $subRepo = $this->container->get(SubscriptionRepository::class);
+        $request = $this->createMock(Request::class);
+        $request
             ->expects($this->once())
-            ->method('getParsedBody')
-            ->willReturn(['payload' => ['id' => 1, 'name' => 'Shirt']]);
-
-        $request = $this->container->get(Request::class);
-        $request->setOriginalRequest($requestMock);
+            ->method('validate')
+            ->with([
+                'topic' => 'required|regex:/.+/',
+                'payload' => 'required',
+                'role' => 'regex:/.+/',
+            ])
+            ->willReturn([
+                'topic' => 'test',
+                'payload' => [],
+                'role' => '',
+            ]);
 
         // Act
-        $eventController = $this->container->get(EventController::class);
+        $eventController = new EventController($subRepo);
         $eventController->handle($request);
     }
 
