@@ -17,6 +17,7 @@ use DI\Container;
 use GazeHub\Exceptions\DataValidationFailedException;
 use GazeHub\Exceptions\UnAuthorizedException;
 use GazeHub\Models\Request;
+use GazeHub\Services\ConfigRepository;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Http\Message\Response;
 
@@ -41,7 +42,8 @@ class Router
         $path = $request->getUri()->getPath();
         $method = $request->getMethod();
 
-        $routes = require(__DIR__ . '/../config/routes.php');
+        $config = $this->container->get(ConfigRepository::class);
+        $routes = require($config->get('routes_config'));
 
         $endPointExist = array_key_exists($method, $routes) && (array_key_exists($path, $routes[$method]));
 
