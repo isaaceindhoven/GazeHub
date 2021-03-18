@@ -23,11 +23,6 @@ use function json_decode;
 class JWTDecoder
 {
     /**
-     * @var ConfigRepository
-     */
-    private $configRepository;
-
-    /**
      * @var string
      */
     private $publicKeyContent;
@@ -37,16 +32,23 @@ class JWTDecoder
      */
     private $algorithm;
 
+    /**
+     * @var bool
+     */
+    private $jwtVerify;
+
     public function __construct(ConfigRepository $configRepository)
     {
-        $this->configRepository = $configRepository;
-        $this->publicKeyContent = file_get_contents($configRepository->get('jwt_public_key'));
+        $this->jwtVerify = $configRepository->get('jwt_verify');
+        if ($this->jwtVerify) {
+            $this->publicKeyContent = file_get_contents($configRepository->get('jwt_public_key'));
+        }
         $this->algorithm = $configRepository->get('jwt_alg');
     }
 
     public function decode(string $token): array
     {
-        if ($this->configRepository->get('jwt_verify') === true) {
+        if ($this->jwtVerify) {
             return JWT::decode($token, $this->publicKeyContent, explode(',', $this->algorithm));
         } else {
             return json_decode(base64_decode(explode('.', $token)[1]), true);

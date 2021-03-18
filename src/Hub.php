@@ -31,7 +31,7 @@ class Hub
      */
     private $container;
 
-    public function setup()
+    public function __construct()
     {
         $this->container = new Container();
     }

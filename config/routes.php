@@ -11,6 +11,7 @@
 
 declare(strict_types=1);
 
+use GazeHub\Controllers\DebugController;
 use GazeHub\Controllers\EventController;
 use GazeHub\Controllers\SSEController;
 use GazeHub\Controllers\SubscriptionController;
@@ -18,6 +19,7 @@ use GazeHub\Controllers\SubscriptionController;
 return [
     'GET' => [
         '/sse' => [SSEController::class, 'handle'],
+        '/debug' => [DebugController::class, 'handle'],
     ],
     'POST' => [
         '/event' => [EventController::class, 'handle'],
