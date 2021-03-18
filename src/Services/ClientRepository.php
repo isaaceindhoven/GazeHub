@@ -63,12 +63,12 @@ class ClientRepository
         $client->roles = $roles;
         $client->tokenId = $tokenId;
         $client->stream = new ThroughStream(static function (array $data) {
-            Log::info('Sending data to client:', $data);
+            Log::debug('Sending data to client:', $data);
             return 'data: ' . json_encode($data) . "\n\n";
         });
 
         array_push($this->clients, $client);
-        Log::info('Connected clients', count($this->clients));
+        Log::debug('Connected clients', count($this->clients));
 
         return $client;
     }
@@ -86,6 +86,6 @@ class ClientRepository
                 break;
             }
         }
-        Log::info('Connected clients', count($this->clients));
+        Log::debug('Connected clients', count($this->clients));
     }
 }

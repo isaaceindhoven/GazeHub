@@ -11,6 +11,8 @@
 
 declare(strict_types=1);
 
+use GazeHub\Log;
+
 return [
     'routes_config' => __DIR__ . '/routes.php',
 
@@ -21,5 +23,5 @@ return [
     'jwt_verify' => false,
     'jwt_alg' => 'RS256',
 
-    'logging' => true,
+    'log_level' => Log::DEBUG,
 ];

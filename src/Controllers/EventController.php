@@ -41,7 +41,7 @@ class EventController extends BaseController
             'role' => 'regex:/.+/',
         ]);
 
-        Log::info('Server wants to emit', $validatedData);
+        Log::debug('Server wants to emit', $validatedData);
 
         /** @var Subscription[] $subscriptions */
         $subscriptions = $this->subscriptionRepository

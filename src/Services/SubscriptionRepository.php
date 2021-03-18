@@ -64,7 +64,7 @@ class SubscriptionRepository
 
             array_push($this->subscriptions, $subscription);
 
-            Log::info('Subscribing client to topic', $topic, 'active subscriptions', count($this->subscriptions));
+            Log::debug('Subscribing client to topic', $topic, 'active subscriptions', count($this->subscriptions));
         }
     }
 
@@ -83,7 +83,7 @@ class SubscriptionRepository
 
                 unset($this->subscriptions[$i]);
 
-                Log::info(
+                Log::debug(
                     'Unsubscribing client from topic',
                     $topic,
                     'active subscriptions',

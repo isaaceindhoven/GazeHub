@@ -27,38 +27,48 @@ use const STDOUT;
 
 class Log
 {
+    public const ERROR = 1;
+    public const WARN = 2;
+    public const INFO = 3;
+    public const DEBUG = 4;
+
     /**
-     * @var bool
+     * @var int
      */
-    private static $enabled = false;
+    private static $logLevel = 0;
 
     /**
      * @var WritableResourceStream
      */
     private static $stream;
 
-    public static function enable(LoopInterface $loop)
+    public static function setLogLevel(LoopInterface $loop, int $logLevel)
     {
-        self::$enabled = true;
-
+        self::$logLevel = $logLevel;
         self::$stream = new WritableResourceStream(STDOUT, $loop);
-
-        self::warn('IMPORTANT: Logging enabled!');
     }
 
     private static function printMsg(string $code, array $args)
     {
-        if (self::$enabled) {
-            $args = array_map(static function ($x) {
-                if (!is_string($x)) {
-                    return json_encode($x);
-                }
-                return $x;
-            }, $args);
+        $args = array_map(static function ($x) {
+            if (!is_string($x)) {
+                return json_encode($x);
+            }
+            return $x;
+        }, $args);
 
-            self::$stream->write(
-                sprintf("[%s] \033[%sm%s \033[0m\n", date('c'), $code, implode(' ', $args))
-            );
+        self::$stream->write(
+            sprintf("[%s] \033[%sm%s \033[0m\n", date('c'), $code, implode(' ', $args))
+        );
+    }
+
+    /**
+     * @param mixed $args
+     */
+    public static function error(...$args)
+    {
+        if (self::$logLevel >= self::ERROR) {
+            Log::printMsg('31', $args);
         }
     }
 
@@ -67,30 +77,18 @@ class Log
      */
     public static function info(...$args)
     {
-        Log::printMsg('36', $args);
+        if (self::$logLevel >= self::INFO) {
+            Log::printMsg('32', $args);
+        }
     }
 
     /**
      * @param mixed $args
      */
-    public static function warn(...$args)
+    public static function debug(...$args)
     {
-        Log::printMsg('33', $args);
-    }
-
-    /**
-     * @param mixed $args
-     */
-    public static function success(...$args)
-    {
-        Log::printMsg('32', $args);
-    }
-
-    /**
-     * @param mixed $args
-     */
-    public static function error(...$args)
-    {
-        Log::printMsg('31', $args);
+        if (self::$logLevel >= self::DEBUG) {
+            Log::printMsg('36', $args);
+        }
     }
 }

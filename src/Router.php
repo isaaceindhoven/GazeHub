@@ -57,6 +57,14 @@ class Router
         $endPoint = $routes[$method][$path];
         $handler = [ $this->container->get($endPoint[0]), $endPoint[1] ];
 
+        return $this->handle($handler, $req);
+    }
+
+    /**
+     * @param callback|array $handler
+     */
+    private function handle($handler, Request $req): Response
+    {
         try {
             return call_user_func($handler, $req);
         } catch (DataValidationFailedException $e) {
