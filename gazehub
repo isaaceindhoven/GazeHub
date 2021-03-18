@@ -1,0 +1,25 @@
+#!/usr/bin/env php
+<?php
+
+// Load composer autoload
+$composerFile = null;
+
+$libraryAutoload = __DIR__ . '/../../autoload.php';
+$projectAutoload = __DIR__ . '/vendor/autoload.php';
+
+foreach([$libraryAutoload, $projectAutoload] as $file) {
+    if (file_exists($file)) {
+        $composerFile = $file;
+        break;
+    }
+}
+
+if ($composerFile == null) {
+    fwrite(STDERR, "You can use gazehub as dependency in a project, " .
+        "or as a standalone application, but make sure you install the dependencies using composer.");
+
+    die(1);
+}
+
+require $composerFile;
+require __DIR__ . '/bin/main.php';

@@ -5,3 +5,4 @@
 *.cache
 coverage/
 .tmp_staging
+gazehub.phar

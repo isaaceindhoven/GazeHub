@@ -30,5 +30,8 @@
     "scripts": {
         "install-git-hooks": "ISAAC\\ComposerGitHooks\\ComposerPlugin::process"
     },
-    "license": "proprietary"
+    "license": "proprietary",
+    "bin": [
+        "gazehub"
+    ]
 }
