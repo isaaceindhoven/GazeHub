@@ -58,7 +58,7 @@ class Hub
 
         $server->listen($socket);
 
-        LOG::info(sprintf('Server running on %s:%s', $host, $port));
+        Log::info(sprintf('Server running on %s:%s', $host, $port));
 
         $loop->run();
     }
