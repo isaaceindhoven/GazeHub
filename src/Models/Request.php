@@ -13,26 +13,19 @@ declare(strict_types=1);
 
 namespace GazeHub\Models;
 
-use Firebase\JWT\JWT;
 use GazeHub\Exceptions\DataValidationFailedException;
 use GazeHub\Exceptions\UnAuthorizedException;
-use GazeHub\Services\ConfigRepository;
+use GazeHub\Services\JWTDecoder;
 use Psr\Http\Message\ServerRequestInterface;
 use Rakit\Validation\Validator;
 use Throwable;
 
 use function array_key_exists;
-use function file_get_contents;
 use function is_array;
 use function str_replace;
 
 class Request
 {
-    /**
-     * @var string
-     */
-    private $publicKey;
-
     /**
      * @var array
      */
@@ -43,9 +36,14 @@ class Request
      */
     private $originalRequest;
 
-    public function __construct(ConfigRepository $config)
+    /**
+     * @var JWTDecoder;
+     */
+    private $jwtDecoder;
+
+    public function __construct(JWTDecoder $jwtDecoder)
     {
-        $this->publicKey = file_get_contents($config->get('jwt_public_key'));
+        $this->jwtDecoder = $jwtDecoder;
     }
 
     public function setOriginalRequest(ServerRequestInterface $request): void
@@ -64,7 +62,7 @@ class Request
         $token = str_replace('Bearer ', '', $token);
 
         try {
-            $this->token = JWT::decode($token, $this->publicKey, ['RS256']);
+            $this->token = $this->jwtDecoder->decode($token);
         } catch (Throwable $th) {
             throw new UnAuthorizedException();
         }

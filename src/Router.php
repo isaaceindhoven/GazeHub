@@ -15,6 +15,7 @@ namespace GazeHub;
 
 use DI\Container;
 use GazeHub\Exceptions\DataValidationFailedException;
+use GazeHub\Exceptions\UnAuthorizedException;
 use GazeHub\Models\Request;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Http\Message\Response;
@@ -58,6 +59,8 @@ class Router
             return call_user_func($handler, $req);
         } catch (DataValidationFailedException $e) {
             return new Response(400, ['Content-Type' => 'application/json'], json_encode($e->errors));
+        } catch (UnAuthorizedException $e) {
+            return new Response(401, ['Content-Type' => 'application/json']);
         }
     }
 }
