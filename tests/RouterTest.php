@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Tests;
 
 use DI\Container;
-use GazeHub\Exceptions\UnAuthorizedException;
 use GazeHub\Router;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
@@ -74,15 +73,5 @@ class RouterTest extends TestCase
 
         // Assert
         $this->assertEquals(404, $response->getStatusCode());
-    }
-
-    public function testShouldNotReturn404IfRouteExists(): void
-    {
-        // Arrange
-        $this->expectException(UnAuthorizedException::class);
-        $request = $this->visitUrl('/event', 'POST');
-
-        // Act
-        $this->router->route($request);
     }
 }

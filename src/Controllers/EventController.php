@@ -37,7 +37,7 @@ class EventController extends BaseController
 
         $validatedData = $request->validate([
             'topic' => 'required|regex:/.+/',
-            'payload' => 'required',
+            'payload' => 'nullable',
             'role' => 'regex:/.+/',
         ]);
 

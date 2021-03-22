@@ -14,28 +14,57 @@ declare(strict_types=1);
 namespace GazeHub\Tests\Controllers;
 
 use DI\Container;
+use GazeHub\Router;
+use GazeHub\Services\ClientRepository;
+use GazeHub\Services\ConfigRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UriInterface;
+use React\Http\Message\Response;
 
+use function base64_encode;
+use function explode;
+use function json_encode;
+use function parse_url;
+use function uniqid;
+
+use const PHP_URL_PATH;
+use const PHP_URL_QUERY;
+
+// phpcs:ignore ObjectCalisthenics.Metrics.MethodPerClassLimit.ObjectCalisthenics\Sniffs\Metrics\MethodPerClassLimitSniff
 class ControllerTestCase extends TestCase
 {
-    /**
-     * @var string
-     */
-    // phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-    protected $clientToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJyb2xlcyI6WyJhZG1pbiJdLCJqdGkiOiJyYW5kb21JZCJ9.JVsy8YrxrRSNHW1AnjpFpRE3G_iWBsJ4MIYeCcRJUUyQh_mb0Pg_vwvf7P8ehpC2YqWX0QcGxqmNYJa4d_de8r4oV5HKwOgc6b-oIpTpF7AO26yYfw2tguFVK37JLDW_5S49K-UK49a8G-5xRyF9cF6qUIVd-C5HxXmDUWPKbHsNM7DMLxpLASKKQw7vvo2MWVOmuOJp-whIEuc4ZuLng89iSW_pby0FlvlwC9s6HDqoP8z47ckz2Pd9a_iZkE_mHs2fQNupdTYlTB9_OAN1hvlktj3dXo4K98K-NCooQsLRtH5tohTTKqkI4ufaxItP5eb_7vz8NOgnIasV1GWk0CsRq9uv1_jrKSHY-DqZojTsRue52OdHPuvyPpFVqHrik2zH1uu62A8JJDC283XYBtO-VviRiTeD9FG20v7W4JgUcsDE7An6_CNtYX5Bj6RmWIXnNqU03av_R08hVA3hQBSROUNublCu-9uMXq3F1Z6C2Nb5uVAfF37ddfkV6E1rUn6jHYHIRy7EyKFGdM_d68TeIRJAf9oo88xFzrE_rPwXCTGKxNuc3kUXl4ecUt6FBjvjgRYPMsKxwnOZ28FP_oZFClhO_ZcJCqFjIcPGrdHpxf_xYQpE5-KsMnty9mQBXJMu2qfeLd22kr6wpkjDuQsEnyMiHHMD8PPykLkZXaw';
-
-    /**
-     * @var string
-     */
-    // phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-    protected $serverToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJyb2xlIjoic2VydmVyIn0.ux1bA7AhD8VBb0f2nXwfi_vRKNxol6jNkINi7Cw18aiK1-0gcoJ5Tdvqg4B6IADcX1SbvizUzKoNPVegQjJ0NIiWMOPoFY-cXF9C4IVw682heIFLX1lyJkRS6ONT-YBAyCb3vuj1LdDuVQf3B94chKu-QdMdVfmjPm2mhYpgjtDmG29cg58zofBoek1iCSHVOvt5DJFe4w0Kse1wicb-q8xlZBmjY_UN9_VgqYLj6YX15TEYzh47RMAdHoghrk53TTASaAg3f3gpvCMiXCzC4mGVvOJUuf-xa43hYISOrtQche4PZzMf_MDpkF7PLI2Nb3Ykgc__PGGXDVXfZyLYIGZwI-GqhxjwES6IqiF-N4VIsMrpkwpkFlXGz8EExLvBZjUX5IxiLky_XtG_zqKLFJmWCtXlsiDWI2AZUoRl3krrSFQAZ8XyyMZOyXlrFu5qo1P5mBOnGIqDemOQgvYUvihfjnzRXveiQrmBM2n7FbJzg1bezJR_3g0ZEINaUOXORSfz6pHLdlIxqaOUCB-7nXEmBVL1ANL4eAIDCgp8eDWmw-_G_hmeTN-nFg_5NBUgItr_ngp2iS3R5GAqrxJ6uqqPv5zgOpt4aP6rNP_n6fdhnhpKSBThqAGPudPGxHYimq8c8CrZkag_-ABXLsgZzrs-NlfEzE_PO0_u5NXbeQk';
-
     /**
      * @var Container
      */
     protected $container;
+
+    /**
+     * @var string
+     */
+    private $url;
+
+    /**
+     * @var string;
+     */
+    private $method;
+
+    /**
+     * @var Response
+     */
+    private $response;
+
+    /**
+     * @var array
+     */
+    // phpcs:ignore SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty
+    private $headers;
+
+    /**
+     * @var array
+     */
+    private $body;
 
     public function __construct()
     {
@@ -43,12 +72,120 @@ class ControllerTestCase extends TestCase
         $this->container = new Container();
     }
 
-    protected function getRequestMock(string $token = ''): MockObject
+    protected function setUp(): void
     {
-        $requestMock = $this->createMock(ServerRequestInterface::class);
-        $requestMock->expects($this->any())->method('hasHeader')->willReturn(true);
-        $requestMock->expects($this->any())->method('getHeaderLine')->willReturn($token);
-        $requestMock->expects($this->any())->method('getQueryParams')->willReturn([]);
-        return $requestMock;
+        $this->response = null;
+        $this->headers = null;
+        $this->body = null;
+    }
+
+    protected function req(string $url, string $method): self
+    {
+        $this->setUp();
+        $this->url = $url;
+        $this->method = $method;
+        return $this;
+    }
+
+    protected function setHeaders(array $headers): self
+    {
+        $this->headers = $headers;
+        return $this;
+    }
+
+    private function generateToken(array $payload): string
+    {
+        return 'KEEPME.' . base64_encode(json_encode($payload)) . '.KEEPME';
+    }
+
+    protected function asServer(): self
+    {
+        $this->setHeaders(['Authorization' => 'Bearer ' . $this->generateToken(['role' => 'server'])]);
+        return $this;
+    }
+
+    protected function registerClient(string $jti): self
+    {
+        $clientRepo = $this->container->get(ClientRepository::class);
+        $clientRepo->add([], $jti);
+        return $this;
+    }
+
+    protected function asClient(string $jti = null): self
+    {
+        $this->setHeaders(['Authorization' => 'Bearer ' . $this->getClientToken($jti) ]);
+        return $this;
+    }
+
+    protected function getClientToken(string $jti = null): string
+    {
+        if ($jti === null) {
+            $jti = uniqid();
+        }
+        return $this->generateToken(['roles' => [], 'jti' => $jti]);
+    }
+
+    protected function setBody(array $body): self
+    {
+        $this->body = $body;
+        return $this;
+    }
+
+    protected function do(): self
+    {
+        $configRepo = new ConfigRepository();
+        $configRepo->loadConfig(__DIR__ . '/../assets/testConfig.php');
+
+        $this->container->set(ConfigRepository::class, $configRepo);
+
+        $router = new Router($this->container);
+        $this->response = $router->route($this->buildOriginalRequest());
+
+        return $this;
+    }
+
+    private function buildOriginalRequest(): MockObject
+    {
+        $originalRequest = $this->createMock(ServerRequestInterface::class);
+
+        $originalRequest->method('getMethod')->willReturn($this->method);
+        $originalRequest->method('getParsedBody')->willReturn($this->body);
+        $originalRequest->method('getQueryParams')->willReturn($this->getParsedQuery());
+        $scope = $this;
+        $originalRequest
+            ->method('getHeaderLine')
+            ->will($this->returnCallback(static function ($key) use ($scope) {
+                return $scope->headers[$key];
+            }));
+
+        $uriMock = $this->createMock(UriInterface::class);
+        $uriMock->method('getPath')->willReturn(parse_url($this->url, PHP_URL_PATH));
+
+        $originalRequest->method('getUri')->willReturn($uriMock);
+
+        return $originalRequest;
+    }
+
+    protected function assertHttpCode(int $code)
+    {
+        if ($this->response === null) {
+            $this->do();
+        }
+
+        $this->assertEquals($code, $this->response->getStatusCode());
+    }
+
+    private function getParsedQuery(): array
+    {
+        if (!parse_url($this->url, PHP_URL_QUERY)) {
+            return [];
+        }
+        $params = explode('&', parse_url($this->url, PHP_URL_QUERY));
+        $queryParams = [];
+        foreach ($params as $param) {
+            [$key, $val] = explode('=', $param);
+            $queryParams[$key] = $val;
+        }
+        return $queryParams;
     }
 }

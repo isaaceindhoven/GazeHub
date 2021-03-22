@@ -18,6 +18,9 @@ use React\Http\Message\Response;
 
 use function file_get_contents;
 
+/**
+ * @codeCoverageIgnore
+ */
 class DebugController extends BaseController
 {
     /**

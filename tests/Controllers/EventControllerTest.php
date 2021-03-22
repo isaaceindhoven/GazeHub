@@ -13,126 +13,79 @@ declare(strict_types=1);
 
 namespace GazeHub\Tests\Controllers;
 
-use GazeHub\Controllers\EventController;
-use GazeHub\Exceptions\DataValidationFailedException;
-use GazeHub\Exceptions\UnAuthorizedException;
 use GazeHub\Models\Client;
-use GazeHub\Models\Request;
 use GazeHub\Models\Subscription;
 use GazeHub\Services\SubscriptionRepository;
 
 class EventControllerTest extends ControllerTestCase
 {
-    public function testShouldThrowIfNotAuthenticated()
+    public function testReponse400IfUnauthorized()
     {
-        // Arrange
-        $this->expectException(UnAuthorizedException::class);
-
-        $subscriptionRepository = $this->createMock(SubscriptionRepository::class);
-        $eventController = new EventController($subscriptionRepository);
-
-        $request = $this->createMock(Request::class);
-        $request
-            ->expects($this->once())
-            ->method('isRole')
-            ->with('server')
-            ->willThrowException(new UnAuthorizedException());
-
-        // Act
-        $eventController->handle($request);
+        $this->req('/event', 'POST')->assertHttpCode(401);
     }
 
-    public function testShouldThrowIfTopicIsMissingFromBody()
+    public function testReponse200IfValidRequest()
     {
-        // Arrange
-        $subRepo = $this->container->get(SubscriptionRepository::class);
-        $request = $this->createMock(Request::class);
-        $request
-            ->expects($this->once())
-            ->method('validate')
-            ->with([
-                'topic' => 'required|regex:/.+/',
-                'payload' => 'required',
-                'role' => 'regex:/.+/',
-            ])
-            ->willReturn([
-                'topic' => 'test',
-                'payload' => [],
-                'role' => '',
-            ]);
-
-        // Act
-        $eventController = new EventController($subRepo);
-        $eventController->handle($request);
+        $this
+            ->req('/event', 'POST')
+            ->asServer()
+            ->setBody(['topic' => 'ProductCreated', 'payload' => 'Test'])
+            ->assertHttpCode(200);
     }
 
-    public function testShouldThrowIfPayloadIsMissingFromBody()
+    public function testResponse400IfTopicMissing()
     {
-        // Arrange
-        $this->expectException(DataValidationFailedException::class);
-        $requestMock = $this->getRequestMock($this->serverToken);
-        $requestMock
-            ->expects($this->once())
-            ->method('getParsedBody')
-            ->willReturn(['topics' => ['ProductCreated']]);
+        $this
+            ->req('/event', 'POST')
+            ->asServer()
+            ->setBody(['topic' => '', 'payload' => 'Test'])
+            ->assertHttpCode(400);
 
-        $request = $this->container->get(Request::class);
-        $request->setOriginalRequest($requestMock);
-
-        // Act
-        $eventController = $this->container->get(EventController::class);
-        $eventController->handle($request);
+        $this
+            ->req('/event', 'POST')
+            ->asServer()
+            ->setBody(['payload' => 'Test'])
+            ->assertHttpCode(400);
     }
 
-    public function testShouldReturn200EvenIfRoleNotPresent()
+    public function testResponse200IfPayloadMissing()
     {
-        // Arrange
-        $requestMock = $this->getRequestMock($this->serverToken);
-        $requestMock
-            ->expects($this->once())
-            ->method('getParsedBody')
-            ->willReturn(['topic' => 'ProductCreated', 'payload' => ['id' => 1, 'name' => 'Shirt'], 'role' => '']);
+        $this
+            ->req('/event', 'POST')
+            ->asServer()
+            ->setBody(['topic' => 'ProductCreated', 'payload' => ''])
+            ->assertHttpCode(200);
 
-        $request = $this->container->get(Request::class);
-        $request->setOriginalRequest($requestMock);
+        $this
+            ->req('/event', 'POST')
+            ->asServer()
+            ->setBody(['topic' => 'ProductCreated', 'payload' => []])
+            ->assertHttpCode(200);
 
-        // Act
-        $eventController = $this->container->get(EventController::class);
-
-        // Assert
-        $response = $eventController->handle($request);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this
+            ->req('/event', 'POST')
+            ->asServer()
+            ->setBody(['topic' => 'ProductCreated'])
+            ->assertHttpCode(200);
     }
 
-    public function testShouldReturn200IfTokenIsCorrect()
+    public function testReponse200IfRoleIsMissing()
     {
-        // Arrange
-        $requestMock = $this->getRequestMock($this->serverToken);
-        $requestMock
-            ->expects($this->once())
-            ->method('getParsedBody')
-            ->willReturn(['topic' => 'ProductCreated', 'payload' => ['id' => 1, 'name' => 'Shirt'], 'role' => 'admin']);
+        $this
+            ->req('/event', 'POST')
+            ->asServer()
+            ->setBody(['topic' => 'ProductCreated', 'payload' => 'Test', 'role' => ''])
+            ->assertHttpCode(200);
 
-        $request = $this->container->get(Request::class);
-        $request->setOriginalRequest($requestMock);
-
-        // Act
-        $eventController = $this->container->get(EventController::class);
-
-        // Assert
-        $response = $eventController->handle($request);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this
+            ->req('/event', 'POST')
+            ->asServer()
+            ->setBody(['topic' => 'ProductCreated', 'payload' => 'Test'])
+            ->assertHttpCode(200);
     }
 
     public function testIfClientSendIsCalled()
     {
-        $requestMoch = $this->createMock(Request::class);
-        $requestMoch->method('validate')->willReturn([
-            'topic' => 'ProductCreated',
-            'payload' => ['id' => 1, 'name' => 'Shirt'],
-            'role' => 'admin',
-        ]);
-
         $subscriptionRepoMoch = $this->createMock(SubscriptionRepository::class);
         $subscription = new Subscription();
         $subscription->client = $this->createMock(Client::class);
@@ -144,8 +97,12 @@ class EventControllerTest extends ControllerTestCase
             $subscription,
         ]);
 
-        $eventController = new EventController($subscriptionRepoMoch);
+        $this->container->set(SubscriptionRepository::class, $subscriptionRepoMoch);
 
-        $eventController->handle($requestMoch);
+        $this
+            ->req('/event', 'POST')
+            ->asServer()
+            ->setBody(['topic' => 'ProductCreated', 'payload' => 'Test'])
+            ->assertHttpCode(200);
     }
 }

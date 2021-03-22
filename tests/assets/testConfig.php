@@ -14,4 +14,7 @@ declare(strict_types=1);
 return [
     'test_key' => 'test_value',
     'jwt_public_key' => __DIR__ . '/public_key.test',
+    'routes_config' => __DIR__ . '/../../config/routes.php',
+    'jwt_verify' => false,
+    'jwt_alg' => 'RS256',
 ];
