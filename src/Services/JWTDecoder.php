@@ -49,7 +49,7 @@ class JWTDecoder
     public function decode(string $token): array
     {
         if ($this->jwtVerify) {
-            return JWT::decode($token, $this->publicKeyContent, explode(',', $this->algorithm));
+            return (array) JWT::decode($token, $this->publicKeyContent, explode(',', $this->algorithm));
         } else {
             return json_decode(base64_decode(explode('.', $token)[1]), true);
         }
