@@ -23,6 +23,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use React\Http\Message\Response;
 
+use function array_key_exists;
 use function base64_encode;
 use function explode;
 use function json_encode;
@@ -75,7 +76,7 @@ class ControllerTestCase extends TestCase
     protected function setUp(): void
     {
         $this->response = null;
-        $this->headers = null;
+        $this->headers = [];
         $this->body = null;
     }
 
@@ -155,6 +156,9 @@ class ControllerTestCase extends TestCase
         $originalRequest
             ->method('getHeaderLine')
             ->will($this->returnCallback(static function ($key) use ($scope) {
+                if (!array_key_exists($key, $scope->headers)) {
+                    return '';
+                }
                 return $scope->headers[$key];
             }));
 
