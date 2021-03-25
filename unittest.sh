@@ -1,18 +1,34 @@
 #!/usr/bin/env bash
 
-function runTest {
+GREEN="\033[0;32m"
+RED="\033[0;31m"
+CYAN="\033[0;36m"
+NO_COLOR="\033[0m"
+
+function success() {
+  echo -e "${GREEN}$1${NO_COLOR}"
+}
+
+function info() {
+  echo -e "${CYAN}$1${NO_COLOR}"
+}
+
+function error() {
+  echo -e "${RED}$1${NO_COLOR}"
+}
+
+function runTest() {
   PHP=$1
 
-  echo "Running tests with PHP $PHP"
+  info "Running tests with PHP $PHP"
 
-  output=$(docker run --rm -v "$PWD":/app -w /app php:"$PHP"-cli ./vendor/bin/phpunit)
+  docker run --rm -v "$PWD":/app -w /app php:"$PHP"-cli ./vendor/bin/phpunit
 
   if [[ -$? -ne 0 ]]; then
-    echo "$output"
-    echo "\033[0;31m⚠️ PHP $PHP Failed!, see phpunit output above ⚠️\033[0m"
+    error "PHP $PHP Failed!, see phpunit output above️"
     exit 1
   else
-    echo "PHP $PHP succeeded"
+    success "PHP $PHP succeeded️"
   fi
 }
 
