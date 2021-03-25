@@ -59,6 +59,10 @@ class Request
             $token = $this->getValueByKey($this->originalRequest->getQueryParams(), 'token');
         }
 
+        if ($token === null) {
+            throw new UnAuthorizedException();
+        }
+
         $token = str_replace('Bearer ', '', $token);
 
         try {
