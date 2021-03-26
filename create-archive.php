@@ -1,40 +1,40 @@
 <?php
 
+/**
+ *   Do not remove or alter the notices in this preamble.
+ *   This software code regards ISAAC Standard Software.
+ *   Copyright © 2021 ISAAC and/or its affiliates.
+ *   www.isaac.nl All rights reserved. License grant and user rights and obligations
+ *   according to applicable license agreement. Please contact sales@isaac.nl for
+ *   questions regarding license and user rights.
+ */
+
 declare(strict_types=1);
+
+/*
+ * Command for generating archive (PHAR):
+ * php --define phar.readonly=0 create-archive.php
+ */
 
 try {
     $pharFile = 'gazehub.phar';
 
-    // clean up
     if (file_exists($pharFile)) {
         unlink($pharFile);
     }
 
-    if (file_exists($pharFile . '.gz')) {
-        unlink($pharFile . '.gz');
-    }
-
-    // create phar
     $phar = new Phar($pharFile);
 
-    // start buffering. Mandatory to modify stub to add shebang
     $phar->startBuffering();
 
-    // Create the default stub from main.php entrypoint
-    $stub = $phar->createDefaultStub('gazehub');
+    $stub = $phar->createDefaultStub('bin/autoload.php');
+    $stub = "#!/usr/bin/env php \n" . $stub;
 
-    // Add the rest of the apps files
     $phar->buildFromDirectory(__DIR__);
-
-    // Add the stub
     $phar->setStub($stub);
-
     $phar->stopBuffering();
-
-    // plus - compressing it into gzip
     $phar->compressFiles(Phar::GZ);
 
-    # Make the file executable
     chmod(__DIR__ . '/' . $pharFile, 0770);
 
     echo sprintf("%s successfully created\n", $pharFile);
