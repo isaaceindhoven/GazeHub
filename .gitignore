@@ -1,8 +1,1 @@
-/vendor/
 .zshrc
-*.key
-/temp
-*.cache
-coverage/
-.tmp_staging
-gazehub.phar
