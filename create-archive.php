@@ -30,7 +30,7 @@ try {
     $stub = $phar->createDefaultStub('bin/autoload.php');
     $stub = "#!/usr/bin/env php \n" . $stub;
 
-    $phar->buildFromDirectory(__DIR__);
+    $phar->buildFromDirectory(__DIR__, '/\.(php|html)$/');
     $phar->setStub($stub);
     $phar->stopBuffering();
     $phar->compressFiles(Phar::GZ);
