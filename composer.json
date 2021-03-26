@@ -1,0 +1,11 @@
+{
+    "name": "isaac/gazehub",
+    "description": "Gazehub",
+    "type": "library",
+    "license": "proprietary",
+    "minimum-stability": "stable",
+    "require": {},
+    "bin": [
+        "gazehub.phar"
+    ]
+}
