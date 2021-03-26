@@ -19,6 +19,7 @@ use GazeHub\Controllers\SubscriptionController;
 return [
     'GET' => [
         '/sse' => [SSEController::class, 'handle'],
+        '/ping' => [SubscriptionController::class, 'ping'],
         '/debug' => [DebugController::class, 'handle'],
     ],
     'POST' => [

@@ -67,16 +67,20 @@ class SubscriptionController extends BaseController
         return $this->json(['status' => 'unsubscribed']);
     }
 
+    public function ping(Request $request): Response
+    {
+        $client = $this->getClient($request);
+        $client->send(['pong']);
+        return new Response();
+    }
+
     protected function getClient(Request $request): Client
     {
         $request->isAuthorized();
-
         $client = $this->clientRepository->getByTokenId($request->getTokenPayload()['jti']);
-
         if (!$client) {
             throw new UnAuthorizedException();
         }
-
         return $client;
     }
 }
