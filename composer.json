@@ -4,7 +4,12 @@
     "type": "library",
     "license": "proprietary",
     "minimum-stability": "stable",
-    "require": {},
+    "require": {
+        "php": "~7.3.0 || ~7.4.0 || ~8.0.0" 
+    },
+    "config": {
+        "sort-packages": true
+    },
     "bin": [
         "gazehub.phar"
     ]
