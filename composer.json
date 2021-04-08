@@ -11,6 +11,6 @@
         "sort-packages": true
     },
     "bin": [
-        "gazehub.phar"
+        "gazehub"
     ]
 }

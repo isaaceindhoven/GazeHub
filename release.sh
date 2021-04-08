@@ -9,13 +9,13 @@
 # 7. Add git commit
 # 8. Push
 
-rm -rf gazehub
-git clone git@gitlab.isaac.local:study/php-chapter/real-time-ui-updates/gazehub-src.git gazehub
-cd gazehub
+rm -rf gazehub-src
+git clone git@gitlab.isaac.local:study/php-chapter/real-time-ui-updates/gazehub-src.git
+cd gazehub-src
 composer install --no-dev
 php --define phar.readonly=0 create-archive.php
-mv gazehub.phar ../gazehub.phar
+mv gazehub.phar ../gazehub
 cd ..
-rm -rf gazehub
-git commit -am "Released new Gazehub phar"
+rm -rf gazehub-src
+git commit -am "Released new Gazehub"
 git push
