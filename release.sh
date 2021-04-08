@@ -17,5 +17,6 @@ php --define phar.readonly=0 create-archive.php
 mv gazehub.phar ../gazehub.phar
 cd ..
 rm -rf gazehub-src
+git add .
 git commit -am "Released new Gazehub"
 git push
