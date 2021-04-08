@@ -14,7 +14,7 @@ git clone git@gitlab.isaac.local:study/php-chapter/real-time-ui-updates/gazehub-
 cd gazehub-src
 composer install --no-dev
 php --define phar.readonly=0 create-archive.php
-mv gazehub.phar ../gazehub
+mv gazehub.phar ../gazehub.phar
 cd ..
 rm -rf gazehub-src
 git commit -am "Released new Gazehub"
