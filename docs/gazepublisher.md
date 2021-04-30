@@ -1,5 +1,5 @@
 # GazePublisher
-GazePublisher is a PHP library that is used in your project's backend to communicate to GazeHub.
+[GazePublisher](https://github.com/isaaceindhoven/GazePublisher) is a PHP library that is used in your project's backend to communicate to GazeHub.
 
 ## Installation
 GazeHub can be installed using [Composer](https://getcomposer.org/) with the following command:
