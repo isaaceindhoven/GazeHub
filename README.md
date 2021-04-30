@@ -1,6 +1,6 @@
 # GazeHub
 
-GazeHub is part of [Gaze](#).
+GazeHub is part of [Gaze](https://isaaceindhoven.github.io/GazeHub/docs).
 GazeHub is the main server that is responsible for sending data from the backend to the frontend.
 
 ## Documentation
