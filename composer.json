@@ -2,7 +2,7 @@
     "name": "isaac/gaze-hub",
     "description": "Gazehub",
     "type": "library",
-    "license": "proprietary",
+    "license": "MIT",
     "minimum-stability": "stable",
     "require": {
         "php": "~7.3.0 || ~7.4.0 || ~8.0.0" 
