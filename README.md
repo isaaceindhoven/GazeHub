@@ -4,7 +4,7 @@ GazeHub is part of [Gaze](#).
 GazeHub is the main server that is responsible for sending data from the backend to the frontend.
 
 ## Documentation
-[Click here](#) to go to the documentation.
+[Click here](https://isaaceindhoven.github.io/GazeHub/docs) to go to the documentation.
 
 ## Run as standalone project
 ```shell script
