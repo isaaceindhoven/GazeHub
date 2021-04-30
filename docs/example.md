@@ -11,8 +11,7 @@ It can be a bit daunting to get a grasp of how all of Gaze comes together. On th
 
 ## Installation
 ```bash
-composer require isaac/gaze-hub
-composer require isaac/gaze-publisher
+composer require isaac/gaze-hub isaac/gaze-publisher
 ```
 
 ## Public/Private keypair
@@ -47,10 +46,10 @@ Most frameworks contain a `.env` file in the root.
 [GazePublisher](gazepublisher) needs 2 important settings to function:
 
 ```env
-# url where the hub is hosted at
-GAZEHUB_URL='https://hub.myproject.com'
+# the host and port where the hub is hosted (same as gazehub.config.json)
+GAZEHUB_URL='0.0.0.0:3333'
 
-# the path location of the primary key file
+# paste here the contents of the 'private.key' file that you generated
 GAZEHUB_PRIVATE_KEY="PRIVATE KEY CONTENTS"
 ```
 
