@@ -78,7 +78,7 @@ public function token(Request $request){
 
 ## Installing GazeClient
 
-You can use GazeClient via a CDN or running `npm install gaze-client`. We will take the CDN approach.
+You can use GazeClient via a CDN or running `npm install @isaac.frontend/gaze-client`. We will take the CDN approach.
 
 ```html
 <head>

@@ -7,7 +7,7 @@ GazeClient is the frontend library for [Gaze](gaze.md) that allows the browser t
 GazeClient can be installed using [npm](https://www.npmjs.com/) with the following command:
 
 ```bash
-npm install --save @isaac/gaze-client
+npm install --save @isaac.frontend/gaze-client
 ```
 
 ## Usage
