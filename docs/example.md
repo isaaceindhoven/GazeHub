@@ -87,13 +87,13 @@ You can use GazeClient via a CDN or running `npm install @isaac.frontend/gaze-cl
 
 ```js
 // get the JWT from the backend
-const tokenResponse = await fetch('/token');
-const tokenData = await tokenResponse.json();
-const token = tokenData.token;
+const tokenRequest = await fetch('/token');
+const tokenRequestJson = await tokenRequest.json();
 
 // connect to gaze
-const gaze = new GazeClient('http://localhost:3333/', token);
+const gaze = new GazeClient('http://localhost:3333/');
 await gaze.connect();
+await gaze.setToken(tokenRequestJson.token);
 ```
 
 ## Run GazeHub
