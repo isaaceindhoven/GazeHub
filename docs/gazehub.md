@@ -64,7 +64,7 @@ To save all the output to a log file you can run: `./vendor/bin/gazehub > log.tx
 
 ### [Docksal](https://docksal.io/)
 
-Docksal is supported out of the box. You can simply run the command.
+Docksal is supported out of the box. You can simply run the `fin up` command.
 If you want to override the default settings we highly recommend to chose the `gazehub.config.json` method.
 
 ### [Docker Compose](https://docs.docker.com/compose/)
