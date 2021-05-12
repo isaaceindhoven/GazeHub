@@ -43,14 +43,3 @@ Read the [example](example) page for a more detailed explanation of where to use
 ## Server-to-server authentication
 For [GazePublisher](gazepublisher.md) to be able to send events to GazeHub it needs a JWT specific for server actions. The server JWT is special because it contains `role = 'server'` in the payload. Without that role, it is not possible to post an event.
 
-## GazeHub authentication
-
-GazeHub accepts the JWT differently on different routes:
-
-| Route | HTTP method | Authentication method | JWT type |
-|---|---|---|---|
-| /event | POST | Authentication header | Server JWT with `role='server'` |
-| /subscription | POST | Authentication header | Client JWT with `roles=['..']` |
-| /subscription | DELETE | Authentication header | Client JWT with `roles=['..']` |
-| /sse | GET | Query /sse?token=... | Client JWT with `roles=['..']` |
-
