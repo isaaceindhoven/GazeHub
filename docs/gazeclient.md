@@ -61,6 +61,22 @@ const subscription = await gaze.on(getTopics, payload => {});
 subscription.update();
 ```
 
+#### Unsubscribe / unmount
+
+You can use the `destroy` method on a subscription to unsubscribe from all topics. This is useful in a Single Page Application when you unmount a component or page, for example.
+
+```javascript
+// Vue 3 example
+onUnmounted(() => {
+	subscription.destroy();
+})
+
+// React example
+componentWillUnmount() {
+	subscription.destroy();
+}
+```
+
 ## Development
 
 GazeClient is written in [TypeScript](https://www.typescriptlang.org/) and uses [Webpack](https://webpack.js.org/) to transpile to JavaScript. You can use to following commands:
