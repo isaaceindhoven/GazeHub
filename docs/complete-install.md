@@ -1,20 +1,13 @@
-# Example
+# Complete install
 
-It can be a bit daunting to get a grasp of how all of Gaze comes together. On this page we will walk you through a generic PHP example.
+It can be a bit daunting to get a grasp of how all of Gaze comes together. On this page we will walk you through a generic PHP example. Before following the tutorial make sure you have the following tools installed: `PHP 7.3`, `NPM` and `Composer`.
 
-## System requirements
-| Name | Check Version
-| --- | --- |
-| PHP | `php -v` |
-| NodeJS | `npm -v` |
-| Composer | `composer -V` |
-
-## Installation
+### Installing GazeHub and GazePublisher
 ```bash
 composer require isaac/gaze-hub isaac/gaze-publisher
 ```
 
-## Public/Private keypair
+### Public/Private keypair
 
 !> Make sure the **private key** never leaves the machine it will be used on and the keys are added to the `.gitignore` file.
 
@@ -26,8 +19,6 @@ openssl genrsa -out private.key 4096
 # Extract public key from private key
 openssl rsa -in private.key -outform PEM -pubout -out public.key
 ```
-
-## Configuring
 
 ### GazeHub configuration
 Create a `gazehub.config.json` file in your project root with the following contents.
@@ -42,7 +33,7 @@ Create a `gazehub.config.json` file in your project root with the following cont
 
 ### GazePublisher configuration
 
-Most frameworks contain a `.env` file in the root.
+Most frameworks have a `.env` file in the root.
 [GazePublisher](gazepublisher) needs 2 important settings to function:
 
 ```env
@@ -64,7 +55,7 @@ public function register(Container $container){
 }
 ```
 
-## Create `/token` URL
+### Create `/token` URL
 
 GazeHub has no clue about your backend authorization. The user (browser) needs to connect with GazeHub using a JWT that has been provided by the backend. You'll need to make a route in your backend that provides the JWT to the user. In the example we will use a `/token` endpoint. The GazePublisher instance `$this->gaze` was provided using dependency injection.
 
@@ -75,14 +66,12 @@ public function token(Request $request){
 }
 ```
 
-## Installing GazeClient
+### Installing GazeClient
 
 You can use GazeClient via a CDN or running `npm install @isaac.frontend/gaze-client`. We will take the CDN approach.
 
 ```html
-<head>
-    <script src="https://unpkg.com/@isaac.frontend/gaze-client/dist/GazeClient.js" defer></script>
-</head>
+<script src="https://unpkg.com/@isaac.frontend/gaze-client/dist/GazeClient.js"></script>
 ```
 
 ```js
@@ -96,15 +85,13 @@ await gaze.connect();
 await gaze.setToken(tokenRequestJson.token);
 ```
 
-## Run GazeHub
+### Run GazeHub
 
 Great! We can now start GazeHub by running the command `GAZEHUB_JWT_PUBLIC_KEY=$(cat public.key) ./vendor/bin/gazehub`.
 
-## Subscribing to a topic
+### Subscribing to a topic
 
 We will finish by subscribing to a topic and receiving its emit payload from the backend.
-
-### Javascript code (receiving)
 
 ```js
 gaze.on('ProductCreated', product => {
@@ -112,7 +99,6 @@ gaze.on('ProductCreated', product => {
 });
 ```
 
-### PHP code (emitting)
 ```php
 // @route('/product', 'post')
 public function product(Request $request){

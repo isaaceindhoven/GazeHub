@@ -1,5 +1,5 @@
 # GazeHub
-[GazeHub](https://github.com/isaaceindhoven/GazeHub) is a server that is responsible for sending from the backend to the frontend.
+[GazeHub](https://github.com/isaaceindhoven/GazeHub) is a server that is responsible for sending data from the backend to the frontend.
 
 ## Installation
 GazeHub can be installed using [Composer](https://getcomposer.org/) with the following command:

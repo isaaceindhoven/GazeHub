@@ -12,7 +12,7 @@ composer require isaac/gaze-publisher
 !>**Before continuing you should read [Authentication](authentication.md).**
 
 ### GazePublisher instance
-?>It is recommended to register the `GazePublish` in your framework's DI container and load the config variables from a config file. Take a look at the [example](example) page.
+?>It is recommended to register the `GazePublish` in your framework's DI container and load the constructor variables from a config file. Take a look at the [Complete install](complete-install) page.
 
 ```php
 $privateKeyContent = file_get_contents('./private.key');

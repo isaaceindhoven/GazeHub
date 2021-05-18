@@ -1,6 +1,6 @@
 # GazeClient
 
-[GazeClient](https://github.com/isaaceindhoven/GazeClient) is the frontend library for [Gaze](gaze.md) that allows the browser to connect to the [GazeHub](gazehub.md) using [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
+[GazeClient](https://github.com/isaaceindhoven/GazeClient) is the frontend library for [Gaze](gaze.md) that allows the browser to connect to the [GazeHub](gazehub.md).
 
 ## Installation
 
@@ -51,7 +51,6 @@ function getTopics() {
 	const rows = [...document.querySelectorAll('.row')]
 	return rows.map(r => 'topic' + r.getAttribute('data-id')); // ['topic1', 'topic2', 'topic3']
 }
-
 const subscription = await gaze.on(getTopics, payload => {});
 
 // To update the subscription, call .update()
