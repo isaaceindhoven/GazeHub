@@ -22,4 +22,4 @@ npm install
 
 ### Running the tests
 
-You can run the tests using the `npm run test` command. This will run the E2E with PHP 7.3. You can run `bash e2etest.sh` to run the E2E test with all of the supported versions of PHP (at moment those are 7.3, 7.4 and 8.0).
+You can run the tests using the `npm run test` command. This will run the E2E with PHP 7.3. You can run `./e2etest.sh` to run the E2E test with all of the supported versions of PHP (at the moment those are 7.3, 7.4 and 8.0).
