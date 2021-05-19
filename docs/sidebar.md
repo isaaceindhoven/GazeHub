@@ -1,5 +1,4 @@
 - [Gaze](gaze.md)
-- [Authentication](authentication.md)
 - [GazeHub](gazehub.md)
 - [GazeClient](gazeclient.md)
 - [GazePublisher](gazepublisher.md)
