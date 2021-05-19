@@ -5,20 +5,20 @@
 
 <!-- tabs:start -->
 
-#### **gazehub.config.json**
+#### **Using a gazehub.config.json file (recommended)**
 
-1. Create a `gazehub.config.json` file in your project root with the following contents.
+GazeHub will try to load a `gazehub.config.json` from the current working directory. Use the `-c` argument to specify a different location. Example: `./vendor/bin/gazehub -c='settings/gaze.config.json'`
+
 ```json
+// gazehub.config.json
 {
     "port": 3333,
     "host": "0.0.0.0"
 }
 ```
-1. You can run `GAZEHUB_JWT_PUBLIC_KEY=$(cat public.key) ./vendor/bin/gazehub` to start GazeHub.
 
-GazeHub will automatically load the `gazehub.config.json` from the current working directory. Use the `-c` argument to specify a different location. Example: `./vendor/bin/gazehub -c='settings/gaze.config.json'`
 
-#### **Environment variables**
+#### **Using environment variables**
 
 You can also override the environment variables. For example, the default host and port are `0.0.0.0:3333` to modify this you can run `GAZEHUB_HOST=192.168.178.10 GAZEHUB_PORT=8005 ./vendor/bin/gazehub`.
 
@@ -42,7 +42,7 @@ Run `./vendor/bin/gazehub -h` to view the default settings.
 #### **CLI**
 
 ```bash
-./vendor/bin/gazehub
+GAZEHUB_JWT_PUBLIC_KEY=$(cat public.key) ./vendor/bin/gazehub
 ```
 
 #### **Docksal**

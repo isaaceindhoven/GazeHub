@@ -1,6 +1,6 @@
 - [Gaze](gaze.md)
+- [Complete install](complete-install.md)
 - [GazeHub](gazehub.md)
 - [GazeClient](gazeclient.md)
 - [GazePublisher](gazepublisher.md)
 - [End-to-end tests](end-to-end-tests.md)
-- [Complete install](complete-install.md)
