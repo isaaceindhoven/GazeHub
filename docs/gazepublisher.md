@@ -19,10 +19,10 @@ $gaze = new GazePublisher('http://localhost:3333', $privateKeyContent);
 $gaze->emit('ProductCreated', $product);
 ```
 
-#### **To specific roles**
+#### **To specific role**
 
 ```php
-$gaze->emit('ProductCreated', $product, ['admin', 'sales']); 
+$gaze->emit('ProductCreated', $product, 'admin'); 
 ```
 
 <!-- tabs:end -->
