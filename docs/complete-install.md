@@ -33,6 +33,10 @@ Create a `gazehub.config.json` file in your project root with the following cont
 
 ### GazePublisher configuration
 
+<!-- tabs:start -->
+
+#### **Generic PHP Project**
+
 Most frameworks have a `.env` file in the root.
 [GazePublisher](gazepublisher) needs 2 important settings to function:
 
@@ -55,16 +59,44 @@ public function register(Container $container){
 }
 ```
 
+#### **Symfony**
+
+TODO
+
+#### **Laravel**
+
+TODO
+
+<!-- tabs:end -->
+
+
 ### Create `/token` URL
+
+<!-- tabs:start -->
+
+#### **Generic PHP Project**
 
 GazeHub has no clue about your backend authorization. The user (browser) needs to connect with GazeHub using a JWT that has been provided by the backend. You'll need to make a route in your backend that provides the JWT to the user. In the example we will use a `/token` endpoint. The GazePublisher instance `$this->gaze` was provided using dependency injection.
 
 ```php
 // @route('/token')
 public function token(Request $request){
-    return ['token' => $this->gaze->generateClientToken($request->user()->getRoles())];
+    $roles = $request->user()->getRoles(); // ['admin', 'sales']
+    return ['token' => $this->gaze->generateClientToken($roles)];
 }
 ```
+
+#### **Symfony**
+
+TODO
+
+#### **Laravel**
+
+TODO
+
+<!-- tabs:end -->
+
+
 
 ### Installing GazeClient
 
@@ -103,7 +135,7 @@ gaze.on('ProductCreated', product => {
 // @route('/product', 'post')
 public function product(Request $request){
     $product = $this->productRepo()->save($request->data());
-    $this->gaze->emit('ProductCreated', $product);
+    %$this->gaze->emit('ProductCreated', $product);
     return $product;
 }
 ```

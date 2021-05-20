@@ -44,6 +44,34 @@
             themeColor: '#0093D4',
             homepage: 'gaze.md',
             auto2top: true,
+            plugins: [
+                function(hook, vm) {
+
+                    hook.afterEach(function(html, next) {
+                        
+                        const page = document.createElement("div");
+                        page.innerHTML = html;
+
+                        let $codeBlocks = [...page.querySelectorAll("pre")];
+
+                        $codeBlocks.forEach($codeBlock => {
+                            [...$codeBlock.querySelectorAll("span")]
+                                .filter($el => $el.innerText === "%")
+                                .forEach($marker => {
+                                    $marker.style.position = "absolute";
+                                    $marker.style.left = "0";
+                                    $marker.style.width = "100vw";
+                                    $marker.style.background = "#45da824f";
+                                    $marker.style.userSelect = "none";
+                                    $marker.style.pointerEvents = "none";
+                                    $marker.innerText = "";
+                                });
+                        });
+
+                        next(page.innerHTML);
+                    });
+                }
+            ]
         }
     </script>
 
