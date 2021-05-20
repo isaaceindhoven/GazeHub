@@ -82,7 +82,7 @@ const tokenRequestJson = await tokenRequest.json();
 // connect to gaze
 const gaze = new GazeClient('http://localhost:3333/');
 await gaze.connect();
-await gaze.setToken(tokenRequestJson.token);
+await gaze.authenticate(tokenRequestJson.token);
 ```
 
 ### Run GazeHub
