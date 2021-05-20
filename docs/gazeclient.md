@@ -93,15 +93,3 @@ componentWillUnmount() {
 ```
 
 <!-- tabs:end -->
-
-### Development
-
-GazeClient is written in [TypeScript](https://www.typescriptlang.org/) and uses [Webpack](https://webpack.js.org/) to transpile to JavaScript. You can use to following commands:
-
-| Command | Description |
-| ------- | ----------- |
-| `npm install` | Installs all the dependencies. |
-| `npm run build` | Builds GazeClient for production. Output is stored in `./dist`. |
-| `npm run dev` | Builds GazeClient for development, without minification. Output is stored in `./dist`. |
-| `npm run lint` | Run [ESLint](https://eslint.org/) to validate coding guidelines. |
-| `npm run test` | Run [Jest](https://jestjs.io/) unit-tests to validate the working of GazeClient. |

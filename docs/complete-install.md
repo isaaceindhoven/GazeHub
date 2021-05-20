@@ -9,8 +9,6 @@ composer require isaac/gaze-hub isaac/gaze-publisher
 
 ### Public/Private keypair
 
-!> Make sure the **private key** never leaves the machine it will be used on and the keys are added to the `.gitignore` file.
-
 Run in your project root:
 ```bash
 # Generate private key
@@ -19,6 +17,8 @@ openssl genrsa -out private.key 4096
 # Extract public key from private key
 openssl rsa -in private.key -outform PEM -pubout -out public.key
 ```
+
+!> Make sure the **private key** never leaves the machine it will be used on and the keys are added to the `.gitignore` file.
 
 ### GazeHub configuration
 Create a `gazehub.config.json` file in your project root with the following contents.
@@ -102,7 +102,7 @@ gaze.on('ProductCreated', product => {
 ```php
 // @route('/product', 'post')
 public function product(Request $request){
-    $product = (new Product())->fill($request->data())->save();
+    $product = $this->productRepo()->save($request->data());
     $this->gaze->emit('ProductCreated', $product);
     return $product;
 }

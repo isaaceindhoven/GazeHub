@@ -19,13 +19,15 @@ $gaze = new GazePublisher('http://localhost:3333', $privateKeyContent);
 $gaze->emit('ProductCreated', $product);
 ```
 
-#### **To specific role**
+#### **To a specific role**
 
 ```php
 $gaze->emit('ProductCreated', $product, 'admin'); 
 ```
 
 <!-- tabs:end -->
+
+?> The payload parameter (in the example `$product`) must be JSON encodable.
 
 ### Error handling
 
@@ -65,13 +67,3 @@ $gaze->emit('ProductCreated', $newProduct);
 ```
 
 <!-- tabs:end -->
-
-
-### Development
-| Command | Description |
-| ------- | ----------- |
-| `./vendor/bin/phpunit` | Runs [PHPUnit](https://phpunit.de/) tests that are present in `/tests/`. |
-| `./vendor/bin/phpunit --coverage-html coverage` | Runs the [PHPUnit](https://phpunit.de/) tests and outputs the code coverage to `coverage/index.html`. |
-| `./vendor/bin/phpstan` | Runs [PHPStan](https://github.com/phpstan/phpstan) Analysis Tool. |
-| `./vendor/bin/phpcs` | Runs [PHP Codesniffer](https://github.com/squizlabs/PHP_CodeSniffer). |
-| `./vendor/bin/phpcbf` | Runs code beautifier. |
