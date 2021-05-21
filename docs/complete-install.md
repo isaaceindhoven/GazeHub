@@ -35,14 +35,14 @@ Create a `gazehub.config.json` file in your project root with the following cont
 
 <!-- tabs:start -->
 
-#### **Generic PHP Project**
+### **Generic PHP Project**
 
 Most frameworks have a `.env` file in the root.
 [GazePublisher](gazepublisher) needs 2 important settings to function:
 
 ```env
 # the host and port where the hub is hosted (same as gazehub.config.json)
-GAZEHUB_URL='0.0.0.0:3333'
+GAZEHUB_URL='http://0.0.0.0:3333'
 
 # paste here the contents of the 'private.key' file that you generated
 GAZEHUB_PRIVATE_KEY="PRIVATE KEY CONTENTS"
@@ -59,13 +59,59 @@ public function register(Container $container){
 }
 ```
 
-#### **Symfony**
+### **Symfony**
 
 TODO
 
-#### **Laravel**
+### **Laravel**
 
-TODO
+
+#### Adding settings to `.env`
+
+Add the `GAZEHUB_URL` and `GAZEHUB_PRIVATE_KEY` setting to your `.env` file in the root.
+
+```env
+# the host and port where the hub is hosted (same as gazehub.config.json)
+GAZEHUB_URL='http://0.0.0.0:3333'
+
+# paste here the contents of the 'private.key' file that you generated
+GAZEHUB_PRIVATE_KEY="PRIVATE KEY CONTENTS"
+```
+
+Create a `config/gaze.php` file with the following contents:
+
+```php
+return [
+    'hub_url' => env('GAZEHUB_URL'),
+    'private_key' => env('GAZEHUB_PRIVATE_KEY')
+];
+```
+
+#### Adding `GazePublisher` to your container
+
+Create a `GazeProvider` with the following command and `register` method:
+
+```bash
+php artisan make:provider GazeProvider
+```
+
+```php
+// file: app/Providers/GazeProvider.php
+public function register()
+{
+    $this->app->singleton(GazePublisher::class, function () {
+        return new GazePublisher(config('gaze.hub_url'), config('gaze.private_key'));
+    });
+}
+```
+
+Register the provider in `config/app.php`:
+```php
+"providers" => [
+    ...
+    App\Providers\GazeProvider::class,
+]
+```
 
 <!-- tabs:end -->
 
@@ -92,7 +138,26 @@ TODO
 
 #### **Laravel**
 
-TODO
+Create a `GazeTokenController` with the following command and code:
+
+```bash
+php artisan make:controller GazeTokenController
+```
+
+```php
+class GazeTokenController extends Controller
+{
+    public function __invoke(GazePublisher $gazePublisher)
+    {
+        return ['token' => $gazePublisher->generateClientToken()];
+    }
+}
+```
+
+Add the `/token` endpoint with the controller to your `web.php` file:
+```php
+Route::get('/token', GazeTokenController::class);
+```
 
 <!-- tabs:end -->
 
@@ -120,6 +185,8 @@ await gaze.authenticate(tokenRequestJson.token);
 ### Run GazeHub
 
 Great! We can now start GazeHub by running the command `GAZEHUB_JWT_PUBLIC_KEY=$(cat public.key) ./vendor/bin/gazehub`.
+
+?> Take a look at the [GazeHub](gazehub) page if you want to start GazeHub using Docker, Supervisor or systemd.
 
 ### Subscribing to a topic
 
