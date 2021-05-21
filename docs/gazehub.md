@@ -45,11 +45,6 @@ Run `./vendor/bin/gazehub -h` to view the default settings.
 GAZEHUB_JWT_PUBLIC_KEY=$(cat public.key) ./vendor/bin/gazehub
 ```
 
-#### **Docksal**
-
-Docksal is supported out of the box. You can simply run the `fin up` command.
-If you want to override the default settings we highly recommend to chose the `gazehub.config.json` method.
-
 #### **Docker Compose**
 
 You can add the following code to your `docker-compose.yml` file if you want to run it in Docker.
@@ -62,12 +57,19 @@ services:
             - 3333:3333
         volumes:
             - ./vendor/:/vendor
-            - ./public.key:/public.key
             - ./gazehub.config.json:/gazehub.config.json
-        environment:
-            - GAZEHUB_JWT_PUBLIC_KEY=$(cat /public.key)
         working_dir: '/'
-        command: '/vendor/bin/gazehub'
+        command: './vendor/bin/gazehub'
+```
+
+The `gazehub.config.json` needs to have the `jwt_public_key` option filled in with the contents of your public.key file. For example:
+
+```json
+{
+    "port": 3333,
+    "host": "0.0.0.0",
+    "jwt_public_key" : "-----BEGIN PUBLIC KEY-----\nMIICIjAN..."
+}
 ```
 
 #### **Supervisor**
@@ -81,18 +83,42 @@ stdout_logfile = /var/log/supervisor/gazehub-stdout
 stderr_logfile = /var/log/supervisor/gazehub-stderr
 ```
 
+The `gazehub.config.json` needs to have the `jwt_public_key` option filled in with the contents of your public.key file. For example:
+
+```json
+{
+    "port": 3333,
+    "host": "0.0.0.0",
+    "jwt_public_key" : "-----BEGIN PUBLIC KEY-----\nMIICIjAN..."
+}
+```
+
+#### **systemd**
+
+Create a `.service` file for systemd in `/etc/systemd/system/` with the following contents:
+
+```ini
+[Unit]
+Description=GazeHub
+
+[Service]
+User=<YOUR_USER>
+WorkingDirectory=<ABSOLUTE_PATH_TO_YOUR_PROJECT>
+ExecStart=<ABSOLUTE_PATH_TO_YOUR_PROJECT>/vendor/bin/gazehub
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+The `gazehub.config.json` needs to have the `jwt_public_key` option filled in with the contents of your public.key file. For example:
+
+```json
+{
+    "port": 3333,
+    "host": "0.0.0.0",
+    "jwt_public_key" : "-----BEGIN PUBLIC KEY-----\nMIICIjAN..."
+}
+```
+
 <!-- tabs:end -->
-
-### Development
-
-| Command | Description |
-| ------- | ----------- |
-| `./vendor/bin/phpunit` | Runs [PHPUnit](https://phpunit.de/) tests that are present in `/tests/`. |
-| `./vendor/bin/phpunit --coverage-html coverage` | Runs the [PHPUnit](https://phpunit.de/) tests and outputs the code coverage to `coverage/index.html`. |
-| `./vendor/bin/phpstan` | Runs [PHPStan](https://github.com/phpstan/phpstan) Analysis Tool. |
-| `./vendor/bin/phpcs` | Runs [PHP Codesniffer](https://github.com/squizlabs/PHP_CodeSniffer). |
-| `./vendor/bin/phpcbf` | Runs code beautifier. |
-
-### Contributing
-
-The main code of GazeHub is hosted [here](https://github.com/isaaceindhoven/GazeHub-src).
