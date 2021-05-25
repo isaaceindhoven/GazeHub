@@ -206,3 +206,7 @@ public function product(Request $request){
     return $product;
 }
 ```
+
+### The full picture
+
+![Diagram](diagram.svg)
