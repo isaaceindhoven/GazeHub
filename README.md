@@ -1,4 +1,6 @@
-# GazeHub
+![GazeHub logo](./docs/hub.svg)
+
+[![CI](https://github.com/isaaceindhoven/GazeHub-src/actions/workflows/CI.yml/badge.svg)](https://github.com/isaaceindhoven/GazeHub-src/actions/workflows/CI.yml) [![PHP version](https://badge.fury.io/ph/isaac%2Fgaze-hub.svg)](https://badge.fury.io/ph/isaac%2Fgaze-hub)
 
 GazeHub is part of [Gaze](https://isaaceindhoven.github.io/GazeHub/docs).
 GazeHub is the main server that is responsible for sending data from the backend to the frontend.
