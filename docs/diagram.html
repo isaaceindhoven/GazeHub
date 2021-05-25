@@ -1,0 +1,93 @@
+<style>
+    .messageText{
+        stroke: none !important;
+    }
+</style>
+
+<div class="mermaid">
+    sequenceDiagram
+        participant Your frontend
+        participant GazeClient
+        participant GazeHub
+        participant GazePublisher
+        participant Your backend
+
+        Your frontend->>Your backend: fetch('/token')
+        activate Your backend
+        Your backend->>GazePublisher: generateClientToken()
+        activate GazePublisher
+        GazePublisher-->>Your backend: <code>'872'</code>
+        deactivate GazePublisher
+        Your backend-->>Your frontend: <code>{"token": "872"}</code>
+        deactivate Your backend
+
+        Your frontend->>Your frontend: const gaze = new GazeClient("HUBURL")
+
+        Your frontend->>GazeClient: gaze.connect()
+        activate GazeClient
+        GazeClient->>GazeHub: GET /sse
+        activate GazeHub
+        GazeHub-->GazeClient: SSE-connection
+        GazeHub--)GazeClient: <code>{"id": "RKL"}</code>
+        GazeClient-->>Your frontend: Connected
+        deactivate GazeClient
+
+        Your frontend->>GazeClient: gaze.authenticate(token);
+        activate GazeClient
+        GazeClient->>GazeHub: POST /auth <br/><code>{"id": "RKL", "token": "872"}</code>
+        activate GazeHub
+        GazeHub-->>GazeClient: OK
+        deactivate GazeHub
+        GazeClient-->>Your frontend: Authenticated
+        deactivate GazeClient
+
+        Your frontend->>GazeClient: gaze.on("NewProduct", callback);
+        activate GazeClient
+        GazeClient->>GazeHub: POST /subscribe <br/><code>{"topics": ["NewProduct"]}</code>
+        activate GazeHub
+        GazeHub-->>GazeClient: OK
+        deactivate GazeHub
+        GazeClient-->>Your frontend: Subscribed
+        deactivate GazeClient
+
+        Your backend->>GazePublisher: <code>$gaze->emit('NewProduct', ['name' => 'T-Shirt'])</code>
+        activate GazePublisher
+        GazePublisher->>GazeHub: POST /emit <br/><code>{"topic": "NewProduct", "payload": {"name": "T-Shirt"}}</code>
+        activate GazeHub
+        GazeHub--)GazeClient: <code>{"topic": "NewProduct", "payload": {"name": "T-Shirt"}}</code>
+        activate GazeClient
+        GazeClient--)Your frontend: <code>callback({"name": "T-Shirt"})</code>
+        deactivate GazeClient
+        GazeHub-->>GazePublisher: OK
+        deactivate GazeHub
+        GazePublisher-->>Your backend: OK
+        deactivate GazePublisher
+
+        deactivate GazeHub
+
+</div>
+
+<script src="https://unpkg.com/mermaid@8.10.1/dist/mermaid.min.js"></script>
+
+<script>
+    var config = {
+        startOnLoad:true,
+        securityLevel:'loose'
+    };
+    mermaid.initialize(config);
+
+    const $ = (html) => {
+        const div = document.createElement("div");
+        div.innerHTML = html;
+        return div;
+    }
+
+    setTimeout(() => {
+        [...document.querySelectorAll("text")].forEach(t => {
+            if (t.textContent.includes("<code>")){
+                t.style.fontFamily = "monospace";
+                t.innerHTML = $(t.textContent).querySelector("code").innerHTML;
+            }
+        });
+    }, 100)
+</script>
