@@ -209,4 +209,6 @@ public function product(Request $request){
 
 ### The full picture
 
+Below is a diagram that visualizes the whole data flow between the libraries, your browser and your backend.
+
 ![Diagram](diagram.svg)
