@@ -1,6 +1,6 @@
 # Complete install
 
-It can be a bit daunting to get a grasp of how all of Gaze comes together. On this page we will walk you through a generic PHP example. Before following the tutorial make sure you have the following tools installed: `PHP 7.3`, `NPM` and `Composer`.
+It can be a bit daunting to get a grasp of how all of Gaze comes together. On this page we will walk you through a generic PHP example. Before following the tutorial make sure you have the following tools installed: `PHP 7.3 or higher`, `NPM` and `Composer`.
 
 ### Installing GazeHub and GazePublisher
 ```bash
@@ -37,26 +37,12 @@ Create a `gazehub.config.json` file in your project root with the following cont
 
 ### **Generic PHP Project**
 
-Most frameworks have a `.env` file in the root.
-[GazePublisher](gazepublisher) needs 2 important settings to function:
-
-```env
-# the host and port where the hub is hosted (same as gazehub.config.json)
-GAZEHUB_URL='http://0.0.0.0:3333'
-
-# paste here the contents of the 'private.key' file that you generated
-GAZEHUB_PRIVATE_KEY="PRIVATE KEY CONTENTS"
-```
-
-We highly recommend that you register the `GazePublisher` instance into your framework's DI container. Below is a generic example.
+Creating a new instance of GazePublisher:
 
 ```php
-public function register(Container $container){
-    $hubUrl = getenv('GAZEHUB_URL');
-    $privateKey = getenv('GAZEHUB_PRIVATE_KEY');
-    $gaze = new GazePublisher($hubUrl, $privateKey);
-    $container->register(GazePublisher::class, $gaze);
-}
+use ISAAC\GazePublisher\GazePublisher;
+
+$gaze = new GazePublisher('http://0.0.0.0:3333', file_get_contents('private.key'));
 ```
 
 ### **Symfony**
@@ -97,6 +83,8 @@ php artisan make:provider GazeProvider
 
 ```php
 // file: app/Providers/GazeProvider.php
+use ISAAC\GazePublisher\GazePublisher;
+
 public function register()
 {
     $this->app->singleton(GazePublisher::class, function () {
@@ -126,10 +114,12 @@ GazeHub has no clue about your backend authorization. The user (browser) needs t
 
 ```php
 // @route('/token')
-public function token(Request $request){
+public function token(Request $request)
+{
     $roles = $request->user()->getRoles(); // ['admin', 'sales']
-    return ['token' => $this->gaze->generateClientToken($roles)];
+    return new Response(json_encode(['token' => $this->gaze->generateClientToken($roles)]));
 }
+
 ```
 
 #### **Symfony**
@@ -145,6 +135,8 @@ php artisan make:controller GazeTokenController
 ```
 
 ```php
+use ISAAC\GazePublisher\GazePublisher;
+
 class GazeTokenController extends Controller
 {
     public function __invoke(GazePublisher $gazePublisher)
