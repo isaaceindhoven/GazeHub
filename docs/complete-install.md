@@ -1,6 +1,6 @@
 # Complete install
 
-It can be a bit daunting to get a grasp of how all of Gaze comes together. On this page we will walk you through a generic PHP example. Before following the tutorial make sure you have the following tools installed: `PHP 7.3 or higher`, `NPM` and `Composer`.
+It can be a bit daunting to get a grasp of how all of Gaze comes together. On this page we will walk you through a generic PHP example. Before following the tutorial make sure you have the following tools installed: **PHP 7.3** or higher, **NPM**, **Composer** and **OpenSSL**.
 
 ### Installing GazeHub and GazePublisher
 ```bash
@@ -33,10 +33,6 @@ Create a `gazehub.config.json` file in your project root with the following cont
 
 ### GazePublisher configuration
 
-<!-- tabs:start -->
-
-### **Generic PHP Project**
-
 Creating a new instance of GazePublisher:
 
 ```php
@@ -45,72 +41,9 @@ use ISAAC\GazePublisher\GazePublisher;
 $gaze = new GazePublisher('http://0.0.0.0:3333', file_get_contents('private.key'));
 ```
 
-### **Symfony**
+### Providing the token to the client
 
-TODO
-
-### **Laravel**
-
-
-#### Adding settings to `.env`
-
-Add the `GAZEHUB_URL` and `GAZEHUB_PRIVATE_KEY` setting to your `.env` file in the root.
-
-```env
-# the host and port where the hub is hosted (same as gazehub.config.json)
-GAZEHUB_URL='http://0.0.0.0:3333'
-
-# paste here the contents of the 'private.key' file that you generated
-GAZEHUB_PRIVATE_KEY="PRIVATE KEY CONTENTS"
-```
-
-Create a `config/gaze.php` file with the following contents:
-
-```php
-return [
-    'hub_url' => env('GAZEHUB_URL'),
-    'private_key' => env('GAZEHUB_PRIVATE_KEY')
-];
-```
-
-#### Adding `GazePublisher` to your container
-
-Create a `GazeProvider` with the following command and `register` method:
-
-```bash
-php artisan make:provider GazeProvider
-```
-
-```php
-// file: app/Providers/GazeProvider.php
-use ISAAC\GazePublisher\GazePublisher;
-
-public function register()
-{
-    $this->app->singleton(GazePublisher::class, function () {
-        return new GazePublisher(config('gaze.hub_url'), config('gaze.private_key'));
-    });
-}
-```
-
-Register the provider in `config/app.php`:
-```php
-"providers" => [
-    ...
-    App\Providers\GazeProvider::class,
-]
-```
-
-<!-- tabs:end -->
-
-
-### Create `/token` URL
-
-<!-- tabs:start -->
-
-#### **Generic PHP Project**
-
-GazeHub has no clue about your backend authorization. The user (browser) needs to connect with GazeHub using a JWT that has been provided by the backend. You'll need to make a route in your backend that provides the JWT to the user. In the example we will use a `/token` endpoint. The GazePublisher instance `$this->gaze` was provided using dependency injection.
+GazeHub has no clue about your backend authorization. The user (browser) needs to connect with GazeHub using a JWT that has been provided by the backend. You can inject the token using a templating engine or using a `/token` endpoint. In the example we will use a `/token` endpoint.
 
 ```php
 // @route('/token')
@@ -121,39 +54,6 @@ public function token(Request $request)
 }
 
 ```
-
-#### **Symfony**
-
-TODO
-
-#### **Laravel**
-
-Create a `GazeTokenController` with the following command and code:
-
-```bash
-php artisan make:controller GazeTokenController
-```
-
-```php
-use ISAAC\GazePublisher\GazePublisher;
-
-class GazeTokenController extends Controller
-{
-    public function __invoke(GazePublisher $gazePublisher)
-    {
-        return ['token' => $gazePublisher->generateClientToken()];
-    }
-}
-```
-
-Add the `/token` endpoint with the controller to your `web.php` file:
-```php
-Route::get('/token', GazeTokenController::class);
-```
-
-<!-- tabs:end -->
-
-
 
 ### Installing GazeClient
 
