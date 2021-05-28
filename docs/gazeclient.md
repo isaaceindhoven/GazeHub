@@ -8,7 +8,6 @@ Below you see an example of creating a connection with the hub using GazeClient.
 
 ```javascript
 const gaze = new GazeClient('http://localhost:3333/');
-await gaze.connect();
 ```
 
 ### Connecting with roles
@@ -24,7 +23,6 @@ const tokenRequestJson = await tokenRequest.json();
 
 // connect to gaze
 const gaze = new GazeClient('http://localhost:3333/');
-await gaze.connect();
 await gaze.authenticate(tokenRequestJson.token);
 ```
 
