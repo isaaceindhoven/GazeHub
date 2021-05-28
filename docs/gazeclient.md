@@ -93,3 +93,21 @@ componentWillUnmount() {
 ```
 
 <!-- tabs:end -->
+
+### Logout
+
+You can use the `disconnect` function when logging out in a SPA.
+
+```javascript
+gaze.disconnect();
+```
+
+### Reconnecting
+
+The user's browser may go into sleep, the browser will automatically close the connection to GazeHub. GazeClient will automatically resubscribe the users on wakeup. You can hook into this event using the onConnectionReset property. For example: showing that the user has probably missed crucial information when the device was asleep and that it is advised to refresh the page.
+
+```js
+gaze.onConnectionReset = () => {
+	alert('Refresh the page to get missed messages');
+}
+```
