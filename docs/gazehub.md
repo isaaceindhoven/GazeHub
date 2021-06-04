@@ -93,6 +93,50 @@ The `gazehub.config.json` needs to have the `jwt_public_key` option filled in wi
 }
 ```
 
+#### **Docksal**
+
+1. Add config file for supervisor to project at `.docksal/services/cli/supervisor/gazehub.conf` (content below)
+1. Add content at the end of `.docksal/docksal.yml` (content below)
+1. Add config file for GazeHub to project at `gazehub.conf.json` (content below)
+1. Add config override for apache at `.docksal/etc/apache/httpd-vhosts.conf` (content below)
+1. Start project with `GAZEHUB_JWT_PUBLIC_KEY=$(cat public.key) fin up`
+
+Content of `.docksal/services/cli/supervisor/gazehub.conf`:
+```ini
+[program:gazehub]
+command = /var/www/vendor/bin/gazehub -c /var/www/gazehub.conf.json
+stdout_logfile = /var/log/supervisor/gazehub-stdout
+stderr_logfile = /var/log/supervisor/gazehub-stderr
+```
+
+Addition to `.docksal/docksal.yml`:
+```yml
+services:
+  cli:
+    volumes:
+      - ./services/cli/supervisor/gazehub.conf:/etc/supervisor/conf.d/gazehub.conf
+    environment:
+      - GAZEHUB_JWT_PUBLIC_KEY
+```
+
+Content of `gazehub.conf.json`:
+```json
+{
+    "port": 3333,
+    "host": "0.0.0.0"
+}
+```
+
+Content of `.docksal/etc/apache/httpd-vhosts.conf`:
+```apacheconf
+<VirtualHost *:80>
+    ServerName ${APACHE_SERVERNAME}
+    ServerAlias gazehub.*
+    ProxyPass / http://cli:3333/ connectiontimeout=86400 timeout=86400
+    ProxyPassReverse / http://cli:3333/
+</VirtualHost>
+```
+
 #### **systemd**
 
 Create a `.service` file for systemd in `/etc/systemd/system/` with the following contents:
