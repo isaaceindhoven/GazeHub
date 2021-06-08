@@ -94,7 +94,16 @@ componentWillUnmount() {
 
 ### Logout
 
-You can use the `disconnect` function when logging out in a SPA.
+You can use the `unauthenticate` function when logging out in a SPA.
+This function will keep the SSE connection alive but reset all the roles provided by the token.
+
+```javascript
+gaze.unauthenticate();
+```
+
+### Disconnect
+
+This will do the same thing as `unauthenticate` but it will also close the SSE connection.
 
 ```javascript
 gaze.disconnect();
