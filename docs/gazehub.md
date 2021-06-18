@@ -33,7 +33,10 @@ Run `./vendor/bin/gazehub -h` to view the default settings.
 |host|GAZEHUB_HOST|`'0.0.0.0'`|The IP that GazeHub runs on.|
 |jwt_public_key|GAZEHUB_JWT_PUBLIC_KEY|`''`|Content of the public key|
 |jwt_alg|GAZEHUB_JWT_ALG|`'RS256'`|The signing algorithm used for the JWT tokens|
-|log_level|GAZEHUB_LOG_LEVEL|`'INFO'`| The level at which the logger will output a value. Available options are: `'DEBUG'`, `'INFO'`, `'WARN'` and `'ERROR'`|
+|log_level|GAZEHUB_LOG_LEVEL|`'INFO'`|The level at which the logger will output a value. Available options are: `'DEBUG'`, `'INFO'`, `'WARN'` and `'ERROR'`|
+|debug_page|GAZEHUB_DEBUG_PAGE|`false`|Whether a monitor page should be served on `/debug`|
+
+?> Setting boolean environment variables you should use the `1` and `0` value instead of `true` or `false`. For example `GAZEHUB_DEBUG_PAGE=1 ./vendor/bin/gazehub`
 
 ### Running GazeHub
 
