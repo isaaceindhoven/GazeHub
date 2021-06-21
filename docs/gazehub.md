@@ -169,3 +169,9 @@ The `gazehub.config.json` needs to have the `jwt_public_key` option filled in wi
 ```
 
 <!-- tabs:end -->
+
+### Monitoring
+
+The monitoring screen allowes a developer to view the active connections, send messages and roles. The monitoring page is hosted at `/debug` and is disabled by default. To enable it set `debug_page` or `GAZEHUB_DEBUG_PAGE` to true.
+
+![Monitoring](debug-screen.png)
